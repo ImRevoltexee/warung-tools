@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- GANTI https://GANTI-DOMAIN-LU.vercel.app dengan domain asli sebelum submit ke Google Search Console -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>/</loc><priority>1.0</priority></url>
-  <url><loc>/tools/wa-link</loc><priority>0.9</priority></url>
-  <url><loc>/tools/qr</loc><priority>0.9</priority></url>
-  <url><loc>/tools/kompres</loc><priority>0.9</priority></url>
-  <url><loc>/tools/nota</loc><priority>0.8</priority></url>
-  <url><loc>/tools/margin</loc><priority>0.8</priority></url>
-  <url><loc>/tools/json</loc><priority>0.7</priority></url>
-  <url><loc>/tools/base64</loc><priority>0.7</priority></url>
-  <url><loc>/tools/password</loc><priority>0.7</priority></url>
-  <url><loc>/tools/splitbill</loc><priority>0.7</priority></url>
-  <url><loc>/anime</loc><priority>0.8</priority></url>
-  <url><loc>/gempa</loc><priority>0.8</priority></url>
-  <url><loc>/cuaca</loc><priority>0.8</priority></url>
-  <url><loc>/sholat</loc><priority>0.8</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/</loc><priority>1.0</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/wa-link</loc><priority>0.9</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/qr</loc><priority>0.9</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/kompres</loc><priority>0.9</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/nota</loc><priority>0.8</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/margin</loc><priority>0.8</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/json</loc><priority>0.7</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/base64</loc><priority>0.7</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/password</loc><priority>0.7</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/tools/splitbill</loc><priority>0.7</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/anime</loc><priority>0.8</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/gempa</loc><priority>0.8</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/cuaca</loc><priority>0.8</priority></url>
+  <url><loc>https://GANTI-DOMAIN-LU.vercel.app/sholat</loc><priority>0.8</priority></url>
 </urlset>

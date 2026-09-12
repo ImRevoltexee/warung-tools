@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /api/
 
-# API publik tetap bisa dipakai, tapi jangan diindeks mesin pencari
-Sitemap: /sitemap.xml
+Sitemap: https://GANTI-DOMAIN-LU.vercel.app/sitemap.xml
