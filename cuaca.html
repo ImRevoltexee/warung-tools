@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cek Cuaca Kota Indonesia — Suhu &amp; Prakiraan 3 Hari</title>
+<meta name="description" content="Cek cuaca hari ini dan prakiraan 3 hari untuk kota di Indonesia: suhu, kelembapan, angin, peluang hujan.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Cek <span class="hl">Cuaca</span></h1>
+    <p>Buat yang mau jemuran, mau berangkat kerja, atau mau jualan keliling. Cek dulu sebelum keluar.</p>
+  </section>
+
+  <section class="panel">
+    <label for="kota">Nama kota</label>
+    <div class="row">
+      <input type="text" id="kota" list="kotaList" placeholder="Jakarta, Surabaya, Bandung..." value="Jakarta" style="flex:3 1 240px">
+      <datalist id="kotaList"></datalist>
+      <button class="btn green" style="flex:0 0 auto" onclick="cek()">⛅ Cek Cuaca</button>
+    </div>
+
+    <div class="btns" id="cepat"></div>
+    <div id="out" style="margin-top:16px"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Baca prakiraan</h2>
+    <ul style="font-size:15px;font-weight:600;line-height:1.9;padding-left:20px">
+      <li><b>Suhu terasa</b> biasanya lebih tinggi dari suhu asli karena kelembapan Indonesia.</li>
+      <li><b>Peluang hujan</b> di atas 60% artinya sebaiknya bawa jas hujan.</li>
+      <li>Cuaca tropis cepat berubah — cek ulang beberapa jam sebelum berangkat.</li>
+    </ul>
+    <div class="note">Sumber data: wttr.in (berbasis data OpenStreetMap). Buat prakiraan resmi jangka panjang, cek BMKG.</div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Data: wttr.in</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+const CEPAT = ['Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Makassar', 'Semarang', 'Yogyakarta', 'Denpasar', 'Palembang', 'Balikpapan'];
+
+function bikinTombolCepat() {
+  const b = document.getElementById('cepat');
+  b.innerHTML = '';
+  for (const k of CEPAT) {
+    const el = document.createElement('button');
+    el.className = 'btn ghost';
+    el.style.fontSize = '12px';
+    el.style.padding = '7px 13px';
+    el.textContent = k;
+    el.onclick = () => { document.getElementById('kota').value = k; cek(); };
+    b.appendChild(el);
+  }
+  const dl = document.getElementById('kotaList');
+  dl.innerHTML = CEPAT.map(k => `<option value="${k}">`).join('');
+}
+
+async function cek() {
+  const kota = document.getElementById('kota').value.trim();
+  const out = document.getElementById('out');
+  if (!kota) { out.innerHTML = '<div class="res" style="background:#FF4D4D;color:#fff">Isi nama kota dulu.</div>'; return; }
+
+  out.innerHTML = '<div class="res"><span class="spin">⏳</span> Ambil data cuaca ' + kota + '...</div>';
+  try {
+    const j = await api('/api/cuaca?kota=' + encodeURIComponent(kota));
+    const s = j.data.sekarang;
+
+    const jam = (j.data.prakiraan[0]?.per_jam || []).slice(0, 6).map(h => `
+      <div style="text-align:center;min-width:76px">
+        <div style="font-weight:900;font-size:12px">${h.jam}</div>
+        <div style="font-size:24px;line-height:1.2">${ikon(h.kondisi)}</div>
+        <div style="font-weight:900">${h.suhu}°</div>
+        <div class="small">💧${h.hujan_peluang}%</div>
+      </div>`).join('');
+
+    const hari = j.data.prakiraan.map(d => {
+      const tgl = new Date(d.tanggal + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
+      const peluang = Math.max(...(d.per_jam || []).map(h => h.hujan_peluang), 0);
+      return `<div class="res">
+        <h4 style="margin-bottom:2px">${tgl}</h4>
+        <p style="margin:0 0 8px" class="small">${ikon(d.per_jam?.[0]?.kondisi)} ${d.per_jam?.[0]?.kondisi || ''}</p>
+        <dl class="kv">
+          <dt>Suhu</dt><dd>${d.suhu_min}° – ${d.suhu_max}°C</dd>
+          <dt>Peluang hujan</dt><dd><span class="chip ${peluang > 60 ? 'off' : ''}">${peluang}%</span></dd>
+          <dt>Matahari</dt><dd>terbit ${d.matahari_terbit || '-'} · tenggelam ${d.matahari_terbenam || '-'}</dd>
+        </dl>
+        <div style="display:flex;gap:8px;overflow-x:auto;margin-top:10px;padding-bottom:4px">${(d.per_jam || []).slice(0, 6).map(h => `
+          <div style="text-align:center;min-width:70px">
+            <div style="font-weight:900;font-size:11px">${h.jam}</div>
+            <div style="font-size:20px">${ikon(h.kondisi)}</div>
+            <div style="font-weight:900;font-size:13px">${h.suhu}°</div>
+            <div class="small">💧${h.hujan_peluang}%</div>
+          </div>`).join('')}</div>
+      </div>`;
+    }).join('');
+
+    out.innerHTML = `
+      <div class="res">
+        <h4 style="font-size:24px;margin-bottom:4px">${ikon(s.kondisi)} ${s.kota}${s.negara ? ', ' + s.negara : ''}</h4>
+        <p style="margin:0 0 12px" class="small">${s.kondisi || ''} · observasi ${s.waktu_observasi || '-'}</p>
+        <div style="font-size:48px;font-weight:900;line-height:1">${s.suhu}°C</div>
+        <p style="margin:4px 0 14px">Terasa seperti <b>${s.terasa}°C</b></p>
+        <dl class="kv">
+          <dt>Kelembapan</dt><dd>${s.kelembapan}%</dd>
+          <dt>Angin</dt><dd>${s.angin_kmh} km/j dari ${s.arah_angin || '-'}</dd>
+          <dt>Tekanan</dt><dd>${s.tekanan} hPa</dd>
+          <dt>Jarak pandang</dt><dd>${s.jarak_pandang_km} km</dd>
+          <dt>Awan</dt><dd>${s.tutupan_awan}%</dd>
+          <dt>Hujan</dt><dd>${s.hujan_mm} mm</dd>
+        </dl>
+        <div style="display:flex;gap:10px;overflow-x:auto;margin-top:16px;padding-bottom:4px">${jam}</div>
+      </div>
+      <h4 style="margin:22px 0 4px;font-size:18px;text-transform:uppercase">Prakiraan ${j.data.prakiraan.length} hari</h4>
+      ${hari}`;
+  } catch (e) {
+    out.innerHTML = '<div class="res" style="background:#FF4D4D;color:#fff">' + e.message + '</div>';
+  }
+}
+
+function ikon(k) {
+  const s = String(k || '').toLowerCase();
+  if (s.includes('thunder') || s.includes('badai')) return '⛈️';
+  if (s.includes('heavy rain') || s.includes('hujan lebat')) return '🌧️';
+  if (s.includes('rain') || s.includes('drizzle') || s.includes('hujan')) return '🌦️';
+  if (s.includes('snow')) return '❄️';
+  if (s.includes('mist') || s.includes('fog') || s.includes('kabut')) return '🌫️';
+  if (s.includes('overcast') || s.includes('mendung')) return '☁️';
+  if (s.includes('cloud') || s.includes('berawan')) return '⛅';
+  if (s.includes('sunny') || s.includes('clear') || s.includes('cerah')) return '☀️';
+  return '🌡️';
+}
+
+bikinTombolCepat();
+cek();
+</script>
+</body>
+</html>

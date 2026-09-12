@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Base64 Encode &amp; Decode Online — Gratis Tanpa Login</title>
+<meta name="description" content="Encode dan decode Base64 online, support teks unicode dan file kecil. Gratis, jalan di browser, data tidak dikirim ke server.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Base64 <span class="hl">Encode / Decode</span></h1>
+    <p>Aman buat teks unicode dan emoji. Semua proses lokal — tidak ada data yang dikirim ke server.</p>
+  </section>
+
+  <section class="panel">
+    <label for="in">Input</label>
+    <textarea id="in" placeholder="Tempel teks atau string Base64 di sini..."></textarea>
+
+    <div class="btns">
+      <button class="btn green" onclick="enc()">⬆️ Encode ke Base64</button>
+      <button class="btn blue" onclick="dec()">⬇️ Decode dari Base64</button>
+      <button class="btn purple" onclick="cekUrl()">🔗 Decode URL-safe</button>
+      <button class="btn ghost" onclick="document.getElementById('in').value='';setOut(document.getElementById('out'),'')">Bersihin</button>
+    </div>
+
+    <div class="out" id="out"></div>
+    <div class="btns">
+      <button class="btn" onclick="copy(document.getElementById('out').textContent)">📋 Copy Hasil</button>
+    </div>
+
+    <div class="note">Pakai tombol "Encode ke Base64" kalau input lu teks biasa. Kalau lu punya string Base64 (biasanya berakhiran = dan cuma berisi huruf/angka/+/ ), pakai tombol Decode.</div>
+  </section>
+
+  <section class="panel">
+    <label for="file">Atau encode file kecil (&lt; 2 MB)</label>
+    <input type="file" id="file" onchange="encFile(this)">
+    <div class="out" id="fileOut"></div>
+    <div class="btns"><button class="btn purple" onclick="copy(document.getElementById('fileOut').textContent)">📋 Copy Data URI</button></div>
+    <p class="small">Berguna buat bikin data URI gambar di CSS, atau nempel file kecil langsung di source code. Jangan pakai buat file gede — bakal lambat.</p>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Tidak ada upload ke server.</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+const b64enc = s => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
+const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s), c => c.charCodeAt(0)));
+
+function norm(s) {
+  let t = s.trim().replace(/\s/g, '');
+  t = t.replace(/-/g, '+').replace(/_/g, '/');
+  while (t.length % 4) t += '=';
+  return t;
+}
+
+function ambil() {
+  const t = document.getElementById('in').value;
+  if (!t.trim()) throw new Error('Input masih kosong.');
+  return t;
+}
+
+function enc() {
+  try { setOut(document.getElementById('out'), b64enc(ambil())); toast('Encoded ✓'); }
+  catch (e) { setOut(document.getElementById('out'), 'Gagal encode: ' + e.message, true); }
+}
+
+function dec() {
+  try { setOut(document.getElementById('out'), b64dec(norm(ambil()))); toast('Decoded ✓'); }
+  catch { setOut(document.getElementById('out'), 'Gagal decode. Pastikan string-nya Base64 yang valid (biasanya diakhiri = atau ==).', true); }
+}
+
+function cekUrl() {
+  try { setOut(document.getElementById('out'), b64dec(norm(ambil()))); toast('Decoded (URL-safe) ✓'); }
+  catch { setOut(document.getElementById('out'), 'Gagal decode URL-safe. Cek lagi string-nya.', true); }
+}
+
+function encFile(el) {
+  const f = el.files?.[0];
+  if (!f) return;
+  if (f.size > 2 * 1024 * 1024) {
+    setOut(document.getElementById('fileOut'), 'File kegedean. Maksimal 2 MB.', true);
+    return;
+  }
+  const r = new FileReader();
+  r.onload = () => {
+    const uri = r.result;
+    setOut(document.getElementById('fileOut'), uri);
+    toast('File di-encode ✓');
+  };
+  r.onerror = () => setOut(document.getElementById('fileOut'), 'Gagal baca file.', true);
+  r.readAsDataURL(f);
+}
+</script>
+</body>
+</html>

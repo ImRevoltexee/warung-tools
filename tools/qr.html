@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QR Code Generator Gratis — Teks, Link, Nomor WA jadi QR</title>
+<meta name="description" content="Bikin QR code dari teks, link, nomor WhatsApp, WiFi, atau email. Bisa download PNG. Gratis, tanpa login, jalan di browser.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>QR Code <span class="hl">Generator</span></h1>
+    <p>Ubah apa pun jadi QR: link, nomor WA, WiFi, atau teks biasa. Bisa didownload PNG buat diprint.</p>
+  </section>
+
+  <section class="panel">
+    <label for="tipe">Jenis isi</label>
+    <select id="tipe" onchange="preset()">
+      <option value="teks">Teks / Link biasa</option>
+      <option value="wa">Chat WhatsApp</option>
+      <option value="wifi">Login WiFi</option>
+      <option value="email">Email</option>
+      <option value="telp">Nomor telepon</option>
+    </select>
+
+    <div id="fields"></div>
+
+    <label for="ukuran">Ukuran (pixel)</label>
+    <select id="ukuran">
+      <option value="256">256 — kecil, buat web</option>
+      <option value="400" selected>400 — pas buat poster</option>
+      <option value="700">700 — buat diprint</option>
+      <option value="1000">1000 — kualitas tinggi</option>
+    </select>
+
+    <label for="warna">Warna QR</label>
+    <div class="row">
+      <input type="text" id="warna" value="0B0B0B" placeholder="0B0B0B">
+      <input type="text" id="warnabg" value="FFFFFF" placeholder="FFFFFF">
+    </div>
+    <p class="small">Format hex tanpa tanda #. Contoh: 0B0B0B (hitam), FF6B9D (pink).</p>
+
+    <div class="btns">
+      <button class="btn green" onclick="bikin()">🔳 Bikin QR</button>
+      <button class="btn ghost" onclick="document.getElementById('hasil').innerHTML=''">Reset</button>
+    </div>
+
+    <div id="hasil"></div>
+    <div class="note">QR dibuat lewat layanan publik api.qrserver.com. Isi QR dikirim ke server mereka untuk digenerate, jadi jangan masukkan data rahasia seperti password atau nomor kartu.</div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Gratis dipakai.</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+const F = {
+  teks: [['isi', 'Teks atau link', 'text', 'https://contoh.com']],
+  wa: [
+    ['isi', 'Nomor WhatsApp', 'text', '628123456789'],
+    ['pesan', 'Pesan otomatis', 'text', 'Halo, saya mau order'],
+  ],
+  wifi: [
+    ['ssid', 'Nama WiFi (SSID)', 'text', 'WarungKu'],
+    ['pass', 'Password WiFi', 'text', 'rahasia123'],
+  ],
+  email: [
+    ['isi', 'Alamat email', 'text', 'halo@contoh.com'],
+    ['subjek', 'Subjek', 'text', 'Tanya produk'],
+  ],
+  telp: [['isi', 'Nomor telepon', 'text', '+628123456789']],
+};
+
+function preset() {
+  const t = document.getElementById('tipe').value;
+  document.getElementById('fields').innerHTML = F[t]
+    .map(([id, label, type, ph]) =>
+      `<label for="${id}">${label}</label><input type="${type}" id="${id}" placeholder="${ph}">`)
+    .join('');
+}
+
+function esc(s) { return String(s).replace(/([\\;,":])/g, '\\$1'); }
+
+function isiData() {
+  const t = document.getElementById('tipe').value;
+  const v = id => (document.getElementById(id)?.value || '').trim();
+
+  if (t === 'teks') {
+    if (!v('isi')) throw new Error('Isi teks atau link dulu ya.');
+    return v('isi');
+  }
+  if (t === 'wa') {
+    let n = v('isi').replace(/[^\d]/g, '');
+    if (n.startsWith('0')) n = '62' + n.slice(1);
+    if (n.length < 9) throw new Error('Nomor WhatsApp belum valid.');
+    const p = v('pesan');
+    return 'https://wa.me/' + n + (p ? '?text=' + encodeURIComponent(p) : '');
+  }
+  if (t === 'wifi') {
+    if (!v('ssid')) throw new Error('Nama WiFi belum diisi.');
+    return `WIFI:T:WPA;S:${esc(v('ssid'))};P:${esc(v('pass'))};;`;
+  }
+  if (t === 'email') {
+    if (!v('isi')) throw new Error('Alamat email belum diisi.');
+    const s = v('subjek');
+    return 'mailto:' + v('isi') + (s ? '?subject=' + encodeURIComponent(s) : '');
+  }
+  if (t === 'telp') {
+    if (!v('isi')) throw new Error('Nomor telepon belum diisi.');
+    return 'tel:' + v('isi').replace(/\s/g, '');
+  }
+}
+
+function bikin() {
+  const hasil = document.getElementById('hasil');
+  try {
+    const data = isiData();
+    const size = document.getElementById('ukuran').value;
+    const fg = (document.getElementById('warna').value || '0B0B0B').replace('#', '');
+    const bg = (document.getElementById('warnabg').value || 'FFFFFF').replace('#', '');
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&color=${fg}&bgcolor=${bg}&margin=12&data=${encodeURIComponent(data)}`;
+
+    hasil.innerHTML =
+      `<div class="res"><h4>QR siap ✓</h4>
+        <img src="${url}" alt="QR code hasil generate" width="${Math.min(size, 380)}">
+        <p class="small" style="margin-top:8px;word-break:break-all">Isi: ${data.replace(/</g, '&lt;')}</p>
+        <div class="btns">
+          <a class="btn blue" href="${url}" download="qr-code.png" target="_blank" rel="noopener">⬇️ Download PNG</a>
+          <button class="btn purple" onclick="copy(${JSON.stringify(url)})">📋 Copy URL Gambar</button>
+        </div>
+      </div>`;
+    toast('QR jadi ✓');
+  } catch (e) {
+    hasil.innerHTML = `<div class="res" style="background:#FF4D4D;color:#fff"><h4>Gagal</h4><p>${e.message}</p></div>`;
+  }
+}
+
+preset();
+</script>
+</body>
+</html>

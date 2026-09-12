@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generator Link WhatsApp Gratis — Bikin wa.me dengan Pesan Otomatis</title>
+<meta name="description" content="Bikin link WhatsApp (wa.me) dengan pesan otomatis. Tinggal masukkan nomor HP dan pesan, langsung dapat link siap dibagikan. Gratis, tanpa login.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Link <span class="hl">WhatsApp</span> Generator</h1>
+    <p>Masukin nomor, tulis pesan, jadi link. Cocok buat jualan online, konfirmasi order, atau tombol "chat penjual".</p>
+  </section>
+
+  <section class="panel">
+    <label for="nomor">Nomor WhatsApp</label>
+    <input type="text" id="nomor" placeholder="08123456789 atau 628123456789" inputmode="numeric">
+    <p class="small">Boleh pakai format lokal (08...) atau internasional (62...). Spasi, tanda +, dan tanda hubung otomatis dibuang.</p>
+
+    <label for="pesan">Pesan otomatis (opsional)</label>
+    <textarea id="pesan" placeholder="Halo, saya mau tanya soal produk yang di iklan..."></textarea>
+
+    <div class="btns">
+      <button class="btn green" onclick="bikin()">🔗 Bikin Link</button>
+      <button class="btn ghost" onclick="reset()">Reset</button>
+    </div>
+
+    <div class="out" id="out"></div>
+    <div class="btns" id="aksi" style="display:none">
+      <button class="btn" id="btnCopy">📋 Copy Link</button>
+      <a class="btn blue" id="btnOpen" target="_blank" rel="noopener">💬 Buka WhatsApp</a>
+      <button class="btn purple" onclick="bikinQR()">🔳 Bikin QR</button>
+    </div>
+    <div id="qrBox"></div>
+
+    <div class="note">Link ini tidak mengirim pesan apa pun secara otomatis. Nomor tujuan hanya akan terbuka di WhatsApp dan user tetap harus klik kirim. Jadi ini aman dipakai buat iklan dan bio.</div>
+  </section>
+
+  <section class="panel">
+    <h2>Sering dipakai buat</h2>
+    <ul style="font-size:15px;font-weight:600;line-height:1.9;padding-left:20px">
+      <li>Link di bio Instagram / TikTok biar orang langsung chat</li>
+      <li>Tombol order di poster jualan</li>
+      <li>Undangan grup WA dengan pesan pembuka</li>
+      <li>Konfirmasi booking, servis, atau reservasi</li>
+    </ul>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Jalan 100% di browser lu.</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+let link = '';
+
+function bersih(n) {
+  let s = String(n).replace(/[^\d+]/g, '').replace(/^\+/, '');
+  if (s.startsWith('0')) s = '62' + s.slice(1);
+  if (s.startsWith('620')) s = '62' + s.slice(3);
+  return s;
+}
+
+function bikin() {
+  const out = document.getElementById('out');
+  const n = bersih(document.getElementById('nomor').value);
+  if (!n || n.length < 9 || n.length > 16) {
+    return setOut(out, 'Nomor belum valid. Contoh yang benar: 08123456789 atau 628123456789.', true);
+  }
+  const pesan = document.getElementById('pesan').value.trim();
+  link = 'https://wa.me/' + n + (pesan ? '?text=' + encodeURIComponent(pesan) : '');
+
+  setOut(out, link);
+  document.getElementById('aksi').style.display = 'flex';
+  document.getElementById('btnOpen').href = link;
+  document.getElementById('qrBox').innerHTML = '';
+  toast('Link jadi ✓');
+}
+
+function reset() {
+  document.getElementById('nomor').value = '';
+  document.getElementById('pesan').value = '';
+  document.getElementById('aksi').style.display = 'none';
+  document.getElementById('qrBox').innerHTML = '';
+  setOut(document.getElementById('out'), '');
+}
+
+function bikinQR() {
+  const box = document.getElementById('qrBox');
+  if (!link) return;
+  const src = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + encodeURIComponent(link);
+  box.innerHTML =
+    '<div class="res"><h4>QR buat link ini</h4><img src="' + src + '" alt="QR code link WhatsApp" width="260" height="260">' +
+    '<p class="small">Long-press / klik kanan gambar buat simpan. Atau pakai halaman <a href="/tools/qr">QR Generator</a> biar bisa didownload.</p></div>';
+}
+
+document.getElementById('btnCopy').onclick = () => copy(link);
+document.getElementById('nomor').addEventListener('keydown', e => { if (e.key === 'Enter') bikin(); });
+</script>
+</body>
+</html>

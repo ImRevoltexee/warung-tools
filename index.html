@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Warung Tools — Tools Gratis & API Publik buat Anak Indonesia</title>
+<meta name="description" content="Kumpulan tools gratis tanpa login: generator link WhatsApp, QR code, format JSON, kompres gambar, nota warung, plus API publik anime, gempa BMKG, cuaca, dan jadwal sholat.">
+<meta name="keywords" content="tools gratis, wa link generator, qr code, kompres gambar, api indonesia, jadwal sholat, gempa bmkg">
+<meta property="og:title" content="Warung Tools — Tools Gratis & API Publik">
+<meta property="og:description" content="14 tools gratis tanpa login. Plus REST API publik buat developer.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Tools gratisan,<br><span class="hl">tanpa login</span></h1>
+    <p>Semua jalan langsung di HP lu. Gak ada daftar, gak ada iklan nyangkut, gak ada kuota kepotong. Plus API publik buat yang mau ngoprek.</p>
+  </section>
+
+  <h2 style="font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;margin:26px 0 0">🧰 Tools</h2>
+  <section class="grid">
+    <a class="card" href="/tools/wa-link">
+      <div class="ico">💬</div><h3>Link WhatsApp</h3>
+      <p>Bikin link wa.me dengan pesan otomatis. Tinggal klik, langsung kebuka chat.</p>
+      <span class="tag">Favorit</span>
+    </a>
+    <a class="card" href="/tools/qr">
+      <div class="ico">🔳</div><h3>QR Code</h3>
+      <p>Ubah teks, link, atau nomor WA jadi QR. Bisa didownload PNG.</p>
+      <span class="tag">Populer</span>
+    </a>
+    <a class="card" href="/tools/json">
+      <div class="ico">🧩</div><h3>Format JSON</h3>
+      <p>Rapihin, minify, dan validasi JSON. Ada pesan error yang jelas kalau rusak.</p>
+      <span class="tag">Dev</span>
+    </a>
+    <a class="card" href="/tools/base64">
+      <div class="ico">🔡</div><h3>Base64</h3>
+      <p>Encode dan decode Base64, termasuk teks unicode dan file kecil.</p>
+      <span class="tag">Dev</span>
+    </a>
+    <a class="card" href="/tools/password">
+      <div class="ico">🔐</div><h3>Password Generator</h3>
+      <p>Bikin password kuat pakai crypto bawaan browser. Ada cek kekuatan.</p>
+      <span class="tag">Aman</span>
+    </a>
+    <a class="card" href="/tools/kompres">
+      <div class="ico">🖼️</div><h3>Kompres Gambar</h3>
+      <p>Kecilin ukuran JPG/PNG langsung di browser. Gak diupload ke mana-mana.</p>
+      <span class="tag">Hemat kuota</span>
+    </a>
+    <a class="card" href="/tools/nota">
+      <div class="ico">🧾</div><h3>Nota Warung</h3>
+      <p>Bikin struk 58mm siap cetak untuk printer thermal. Cocok buat warung.</p>
+      <span class="tag">UMKM</span>
+    </a>
+    <a class="card" href="/tools/margin">
+      <div class="ico">📊</div><h3>Kalkulator Margin</h3>
+      <p>Hitung harga jual dan untung dari modal. Ada simulasi diskon.</p>
+      <span class="tag">UMKM</span>
+    </a>
+    <a class="card" href="/tools/splitbill">
+      <div class="ico">🤝</div><h3>Split Bill</h3>
+      <p>Bagi tagihan rata atau per item, plus pajak dan service. Ada tombol WA.</p>
+      <span class="tag">Hangout</span>
+    </a>
+  </section>
+
+  <h2 style="font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;margin:26px 0 0">🌐 Data &amp; API Publik</h2>
+  <section class="grid">
+    <a class="card" href="/anime">
+      <div class="ico">🎌</div><h3>Cari Anime</h3>
+      <p>Cari judul, lihat skor, sinopsis, dan link resmi. Data dari MyAnimeList.</p>
+      <span class="tag">API</span>
+    </a>
+    <a class="card" href="/gempa">
+      <div class="ico">🌋</div><h3>Gempa Terbaru</h3>
+      <p>Data resmi BMKG: magnitudo, kedalaman, dan lokasi gempa terakhir.</p>
+      <span class="tag">API</span>
+    </a>
+    <a class="card" href="/cuaca">
+      <div class="ico">⛅</div><h3>Cuaca Kota</h3>
+      <p>Cek suhu, kelembapan, dan prakiraan beberapa hari ke depan.</p>
+      <span class="tag">API</span>
+    </a>
+    <a class="card" href="/sholat">
+      <div class="ico">🕌</div><h3>Jadwal Sholat</h3>
+      <p>Jadwal sholat hari ini per kota/kabupaten se-Indonesia.</p>
+      <span class="tag">API</span>
+    </a>
+  </section>
+
+  <section class="panel">
+    <h2>API buat Developer</h2>
+    <p class="sub">Semua endpoint bebas dipakai, balikin JSON, gak perlu API key.</p>
+    <ul style="font-size:14px;font-weight:600;padding-left:20px">
+      <li><code>GET /api/anime?q=naruto&amp;limit=10</code> — cari anime</li>
+      <li><code>GET /api/anime?id=20</code> — detail satu anime</li>
+      <li><code>GET /api/gempa</code> — gempa terbaru BMKG</li>
+      <li><code>GET /api/cuaca?kota=Jakarta</code> — cuaca + prakiraan</li>
+      <li><code>GET /api/sholat?kota=Jakarta</code> — jadwal sholat hari ini</li>
+      <li><code>GET /api/sholat?kota=Jakarta&amp;tanggal=2026-09-20</code> — jadwal tanggal tertentu</li>
+    </ul>
+    <div class="note">Data gempa dan sholat diambil dari sumber publik resmi (BMKG, myQuran). Anime dari Jikan/MyAnimeList. Gue cuma nyalurin plus cache biar cepat — bukan host video atau konten bajakan.</div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <span>Warung Tools — dibuat buat yang butuh cepet.</span>
+  <span class="small">Gratis dipakai. Silakan embed API-nya.</span>
+</div></footer>
+<script src="/assets/app.js"></script>
+</body>
+</html>

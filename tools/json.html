@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Format &amp; Validasi JSON Online — Rapihin JSON Gratis</title>
+<meta name="description" content="Rapihin (pretty print), minify, dan validasi JSON online. Pesan error jelas kalau JSON rusak. Gratis tanpa login.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Format <span class="hl">JSON</span></h1>
+    <p>Tempel JSON berantakan, langsung rapi. Kalau rusak, gue kasih tau salahnya di mana.</p>
+  </section>
+
+  <section class="panel">
+    <label for="in">JSON mentah</label>
+    <textarea id="in" placeholder='{"nama":"warung","omzet":250000,"item":[1,2,3]}'></textarea>
+
+    <div class="btns">
+      <button class="btn green" onclick="rapihin()">✨ Rapihin (indent 2)</button>
+      <button class="btn blue" onclick="minify()">📦 Minify</button>
+      <button class="btn purple" onclick="urut()">🔤 Urutin Key</button>
+      <button class="btn orange" onclick="validasi()">✅ Cek Valid?</button>
+      <button class="btn ghost" onclick="document.getElementById('in').value='';document.getElementById('info').textContent=''">Bersihin</button>
+    </div>
+
+    <div class="out" id="out"></div>
+    <div class="note" id="info" style="display:none"></div>
+
+    <div class="btns">
+      <button class="btn" onclick="copy(document.getElementById('out').textContent)">📋 Copy Hasil</button>
+      <button class="btn ghost" onclick="pakaiHasil()">⬆️ Pakai Hasil ke Input</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Kegunaan harian</h2>
+    <ul style="font-size:15px;font-weight:600;line-height:1.9;padding-left:20px">
+      <li>Debug respon API yang bikin pusing dibaca</li>
+      <li>Rapihin config sebelum di-commit</li>
+      <li>Cek cepat JSON rusak sebelum kirim ke server</li>
+      <li>Minify biar hemat ukuran payload</li>
+    </ul>
+    <div class="note">Data lu tidak pernah dikirim ke mana-mana. Semua parsing jalan di browser.</div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">100% offline di browser.</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+function ambil() {
+  const t = document.getElementById('in').value.trim();
+  if (!t) throw new Error('Input masih kosong.');
+  try { return JSON.parse(t); }
+  catch (e) {
+    throw new Error('JSON rusak: ' + e.message.split('\n')[0]);
+  }
+}
+
+function tampil(o) {
+  const s = typeof o === 'string' ? o : JSON.stringify(o, null, 2);
+  setOut(document.getElementById('out'), s);
+  const n = typeof o === 'object' ? JSON.stringify(o).length : String(o).length;
+  const info = document.getElementById('info');
+  info.style.display = 'block';
+  info.textContent = `✅ JSON valid. Ukuran: ${n.toLocaleString('id-ID')} karakter.`;
+}
+
+function rapihin() {
+  try { tampil(ambil()); toast('Rapi ✓'); }
+  catch (e) { setOut(document.getElementById('out'), e.message, true); }
+}
+
+function minify() {
+  try {
+    const o = ambil();
+    const s = JSON.stringify(o);
+    setOut(document.getElementById('out'), s);
+    document.getElementById('info').style.display = 'block';
+    document.getElementById('info').textContent = `📦 Minified. Ukuran akhir: ${s.length.toLocaleString('id-ID')} karakter.`;
+    toast('Minified ✓');
+  } catch (e) { setOut(document.getElementById('out'), e.message, true); }
+}
+
+function urutin(o) {
+  if (Array.isArray(o)) return o.map(urutin);
+  if (o && typeof o === 'object') {
+    const r = {};
+    for (const k of Object.keys(o).sort()) r[k] = urutin(o[k]);
+    return r;
+  }
+  return o;
+}
+
+function urut() {
+  try {
+    const o = ambil();
+    tampil(urutin(o));
+    toast('Key diurutin ✓');
+  } catch (e) { setOut(document.getElementById('out'), e.message, true); }
+}
+
+function validasi() {
+  try {
+    const o = ambil();
+    const tipe = Array.isArray(o) ? `array (${o.length} item)` : typeof o;
+    const info = document.getElementById('info');
+    info.style.display = 'block';
+    info.textContent = `✅ JSON valid. Tipe root: ${tipe}.`;
+    setOut(document.getElementById('out'), '✅ Valid');
+    toast('Valid ✓');
+  } catch (e) { setOut(document.getElementById('out'), e.message, true); }
+}
+
+function pakaiHasil() {
+  const s = document.getElementById('out').textContent;
+  if (!s || s.startsWith('✅') || s.startsWith('JSON rusak')) return toast('Gak ada hasil');
+  document.getElementById('in').value = s;
+  toast('Dipindah ke input');
+}
+</script>
+</body>
+</html>

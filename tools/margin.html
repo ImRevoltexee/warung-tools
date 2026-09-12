@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalkulator Margin &amp; Harga Jual — Buat Jualan Online</title>
+<meta name="description" content="Hitung harga jual, margin keuntungan, dan simulasi diskon untuk jualan online atau warung. Gratis tanpa login.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Kalkulator <span class="hl">Margin</span></h1>
+    <p>Modal berapa, mau untung berapa persen, harga jualnya berapa. Plus simulasi kalau kena diskon atau potongan marketplace.</p>
+  </section>
+
+  <section class="panel">
+    <div class="row">
+      <div>
+        <label for="modal">Harga modal (per unit)</label>
+        <input type="number" id="modal" value="45000" min="0" oninput="hitung()">
+      </div>
+      <div>
+        <label for="biaya">Biaya tambahan per unit</label>
+        <input type="number" id="biaya" value="5000" min="0" oninput="hitung()">
+        <p class="small">Packing, ongkos kirim subsidi, dll.</p>
+      </div>
+      <div>
+        <label for="target">Target margin (%)</label>
+        <input type="number" id="target" value="30" min="0" max="500" oninput="hitung()">
+      </div>
+      <div>
+        <label for="komisi">Komisi marketplace (%)</label>
+        <input type="number" id="komisi" value="8" min="0" max="50" step="0.5" oninput="hitung()">
+      </div>
+    </div>
+
+    <div id="hasil"></div>
+
+    <label for="hargaManual" style="margin-top:22px">Atau hitung dari harga jual yang sudah ditentukan</label>
+    <input type="number" id="hargaManual" value="85000" min="0" oninput="manual()">
+    <div id="hasilManual"></div>
+
+    <div class="note">Margin itu persentase untung dari harga jual. Markup itu persentase untung dari modal. Angkanya beda — banyak yang ketuker. Gue tampilkan keduanya biar gak salah.</div>
+  </section>
+
+  <section class="panel">
+    <h2>Simulasi diskon</h2>
+    <p class="sub">Cek dulu apakah diskon masih untung sebelum lu tulis "SALE 40%" di poster.</p>
+    <div class="row">
+      <div>
+        <label for="disc">Diskon (%)</label>
+        <input type="number" id="disc" value="20" min="0" max="90" oninput="simulasi()">
+      </div>
+    </div>
+    <div id="hasilDiskon"></div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Hitung ulang kalau biaya berubah.</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+function hitung() {
+  const modal = +document.getElementById('modal').value || 0;
+  const biaya = +document.getElementById('biaya').value || 0;
+  const target = +document.getElementById('target').value || 0;
+  const komisiPct = +document.getElementById('komisi').value || 0;
+  const hpp = modal + biaya;
+
+  // Harga jual supaya margin SETELAH komisi tetap sesuai target
+  // margin = (jual - hpp - komisi) / jual  =>  jual = hpp / (1 - target/100 - komisi/100)
+  const penyebut = 1 - (target + komisiPct) / 100;
+  const box = document.getElementById('hasil');
+
+  if (penyebut <= 0) {
+    box.innerHTML = `<div class="note bad">Target margin ${target}% + komisi ${komisiPct}% = ${(target + komisiPct).toFixed(1)}%. Itu 100% atau lebih, gak mungkin untung. Turunin salah satunya.</div>`;
+    return;
+  }
+
+  const jual = hpp / penyebut;
+  const jualBulat = Math.ceil(jual / 500) * 500;
+  const komisi = jualBulat * komisiPct / 100;
+  const untung = jualBulat - hpp - komisi;
+  const marginReal = jualBulat ? (untung / jualBulat) * 100 : 0;
+  const markup = hpp ? (untung / hpp) * 100 : 0;
+
+  box.innerHTML = `
+    <div class="res">
+      <h4>Harga jual rekomendasi: ${rupiah(jualBulat)}</h4>
+      <p class="small">Sudah dibulatkan ke atas ke kelipatan Rp500 biar gampang diiklankan.</p>
+      <dl class="kv">
+        <dt>HPP total</dt><dd>${rupiah(hpp)} (modal ${rupiah(modal)} + biaya ${rupiah(biaya)})</dd>
+        <dt>Harga jual</dt><dd><b>${rupiah(jualBulat)}</b></dd>
+        <dt>Potongan marketplace ${komisiPct}%</dt><dd>-${rupiah(komisi)}</dd>
+        <dt>Untung bersih</dt><dd><b>${rupiah(untung)}</b></dd>
+        <dt>Margin sebenarnya</dt><dd>${marginReal.toFixed(1)}% <span class="chip ${marginReal >= target - 1 ? '' : 'off'}">target ${target}%</span></dd>
+        <dt>Markup dari HPP</dt><dd>${markup.toFixed(1)}%</dd>
+        <dt>Uang masuk ke lu per unit</dt><dd>${rupiah(jualBulat - komisi)}</dd>
+      </dl>
+    </div>`;
+  simulasi(jualBulat, hpp);
+}
+
+function manual() {
+  const jual = +document.getElementById('hargaManual').value || 0;
+  const modal = +document.getElementById('modal').value || 0;
+  const biaya = +document.getElementById('biaya').value || 0;
+  const komisiPct = +document.getElementById('komisi').value || 0;
+  const hpp = modal + biaya;
+
+  if (!jual || !hpp) { document.getElementById('hasilManual').innerHTML = ''; return; }
+
+  const komisi = jual * komisiPct / 100;
+  const untung = jual - hpp - komisi;
+  const margin = (untung / jual) * 100;
+  const markup = (untung / hpp) * 100;
+  const status = untung <= 0
+    ? '<div class="note bad">Rugi. Harga jual di bawah HPP + komisi. Naikkan harga atau turunin biaya.</div>'
+    : margin < 10
+      ? '<div class="note warn">Untung tipis. Satu kali retur atau salah kirim bisa habis.</div>'
+      : '<div class="note">Masih sehat. Pastikan estimasi biaya operasional lain sudah masuk.</div>';
+
+  document.getElementById('hasilManual').innerHTML = `
+    <div class="res">
+      <dl class="kv">
+        <dt>HPP</dt><dd>${rupiah(hpp)}</dd>
+        <dt>Jual</dt><dd>${rupiah(jual)}</dd>
+        <dt>Komisi ${komisiPct}%</dt><dd>-${rupiah(komisi)}</dd>
+        <dt>Untung</dt><dd><b>${rupiah(untung)}</b></dd>
+        <dt>Margin</dt><dd>${margin.toFixed(1)}%</dd>
+        <dt>Markup</dt><dd>${markup.toFixed(1)}%</dd>
+      </dl>
+      ${status}
+    </div>`;
+}
+
+function simulasi(jualPaksa, hppPaksa) {
+  const disc = +document.getElementById('disc').value || 0;
+  const hpp = hppPaksa ?? ((+document.getElementById('modal').value || 0) + (+document.getElementById('biaya').value || 0));
+  const komisiPct = +document.getElementById('komisi').value || 0;
+
+  let jual = jualPaksa;
+  if (!jual) {
+    const target = +document.getElementById('target').value || 0;
+    const penyebut = 1 - (target + komisiPct) / 100;
+    if (penyebut <= 0) { document.getElementById('hasilDiskon').innerHTML = ''; return; }
+    jual = Math.ceil((hpp / penyebut) / 500) * 500;
+  }
+
+  const jualDiskon = jual * (1 - disc / 100);
+  const komisi = jualDiskon * komisiPct / 100;
+  const untung = jualDiskon - hpp - komisi;
+  const breakevenDiskon = Math.max(0, ((jual - jual * komisiPct / 100 - hpp) / (jual * (1 - komisiPct / 100))) * 100);
+
+  document.getElementById('hasilDiskon').innerHTML = `
+    <div class="res">
+      <p>Harga normal <b>${rupiah(jual)}</b> → setelah diskon ${disc}% jadi <b>${rupiah(jualDiskon)}</b></p>
+      <dl class="kv">
+        <dt>Uang masuk</dt><dd>${rupiah(jualDiskon - komisi)}</dd>
+        <dt>HPP</dt><dd>${rupiah(hpp)}</dd>
+        <dt>Untung</dt><dd><b>${rupiah(untung)}</b></dd>
+      </dl>
+      ${untung <= 0
+        ? `<div class="note bad">Diskon ${disc}% bikin RUGI ${rupiah(Math.abs(untung))} per unit. Batas aman diskon lu sekitar ${breakevenDiskon.toFixed(1)}%.</div>`
+        : `<div class="note">Masih untung ${rupiah(untung)} per unit. Batas maksimal diskon sebelum impas: sekitar ${breakevenDiskon.toFixed(1)}%.</div>`}
+    </div>`;
+}
+
+hitung();
+manual();
+</script>
+</body>
+</html>

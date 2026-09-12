@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kompres &amp; Convert Gambar Jadi WebP — Online Gratis</title>
+<meta name="description" content="Kecilin ukuran JPG/PNG dan convert ke WebP langsung di browser. Gambar tidak diupload ke server, aman dan gratis.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Kompres &amp; <span class="hl">Convert Gambar</span></h1>
+    <p>Kecilin ukuran foto buat upload ke marketplace, atau convert PNG jadi WebP biar web lu ngebut. Gambar lu gak pernah keluar dari HP.</p>
+  </section>
+
+  <section class="panel">
+    <label for="file">Pilih gambar (bisa banyak)</label>
+    <input type="file" id="file" accept="image/*" multiple onchange="proses(this.files)">
+
+    <div class="row" style="margin-top:14px">
+      <div>
+        <label for="kualitas">Kualitas: <span id="kv" class="chip">75%</span></label>
+        <input type="range" id="kualitas" min="30" max="95" value="75" oninput="kv.textContent=this.value+'%'" style="width:100%">
+      </div>
+      <div>
+        <label for="format">Format output</label>
+        <select id="format">
+          <option value="image/webp">WebP — paling kecil (rekomendasi)</option>
+          <option value="image/jpeg">JPEG — paling kompatibel</option>
+          <option value="image/png">PNG — tanpa kompresi lossy</option>
+        </select>
+      </div>
+      <div>
+        <label for="lebarMaks">Lebar maksimal (px)</label>
+        <input type="number" id="lebarMaks" value="1600" min="100" max="6000">
+        <p class="small">Gambar yang lebih lebar akan dikecilkan.</p>
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="btn green" onclick="proses(document.getElementById('file').files)">🖼️ Proses</button>
+      <button class="btn ghost" onclick="document.getElementById('hasil').innerHTML='';document.getElementById('file').value=''">Reset</button>
+    </div>
+
+    <div id="hasil"></div>
+    <div class="note">Semua proses pakai canvas browser. Tidak ada upload, tidak ada batas jumlah, dan hasilnya lebih privat dari tool online biasa yang kirim gambar ke server.</div>
+  </section>
+
+  <section class="panel">
+    <h2>Kenapa WebP?</h2>
+    <ul style="font-size:15px;font-weight:600;line-height:1.9;padding-left:20px">
+      <li>Ukuran 25-35% lebih kecil dari JPEG dengan kualitas mirip</li>
+      <li>Didukung semua browser modern dan WhatsApp</li>
+      <li>Bagus buat foto produk di marketplace yang batesin ukuran file</li>
+    </ul>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Gambar tidak dikirim ke server.</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+function bytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+async function kompres(file) {
+  const bitmap = await createImageBitmap(file);
+  const maks = +document.getElementById('lebarMaks').value || 1600;
+  let { width, height } = bitmap;
+  if (width > maks) {
+    height = Math.round(height * (maks / width));
+    width = maks;
+  }
+  const cv = document.createElement('canvas');
+  cv.width = width; cv.height = height;
+  const ctx = cv.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close?.();
+
+  const mime = document.getElementById('format').value;
+  const q = (+document.getElementById('kualitas').value) / 100;
+  const blob = await new Promise(r => cv.toBlob(r, mime, mime === 'image/png' ? undefined : q));
+  return { blob, width, height };
+}
+
+async function proses(files) {
+  const box = document.getElementById('hasil');
+  if (!files || !files.length) return toast('Pilih gambar dulu');
+
+  box.innerHTML = '';
+  for (const f of files) {
+    const card = document.createElement('div');
+    card.className = 'res';
+    card.innerHTML = '<p><span class="spin">⏳</span> Memproses <b>' + f.name + '</b>...</p>';
+    box.appendChild(card);
+
+    try {
+      const { blob, width, height } = await kompres(f);
+      const hemat = 100 - Math.round((blob.size / f.size) * 100);
+      const url = URL.createObjectURL(blob);
+      const mime = document.getElementById('format').value;
+      const ext = mime.split('/')[1];
+      const namaBaru = f.name.replace(/\.[^.]+$/, '') + '.' + ext;
+
+      card.innerHTML = `
+        <h4>${f.name}</h4>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+          <img src="${url}" alt="preview hasil kompres" style="max-width:220px">
+          <div>
+            <dl class="kv">
+              <dt>Sebelum</dt><dd>${bytes(f.size)} (${f.type || 'tak diketahui'})</dd>
+              <dt>Sesudah</dt><dd>${bytes(blob.size)} (${mime.split('/')[1]})</dd>
+              <dt>Hemat</dt><dd><span class="chip ${hemat > 0 ? '' : 'off'}">${hemat > 0 ? '-' + hemat + '%' : 'file jadi lebih besar'}</span></dd>
+              <dt>Dimensi</dt><dd>${width} × ${height} px</dd>
+            </dl>
+          </div>
+        </div>`;
+
+      if (hemat > 0 || mime !== 'image/png') {
+        const btn = document.createElement('button');
+        btn.className = 'btn blue';
+        btn.textContent = '⬇️ Download ' + namaBaru;
+        btn.onclick = () => {
+          const a = document.createElement('a');
+          a.href = url; a.download = namaBaru; a.click();
+        };
+        card.appendChild(btn);
+      }
+    } catch (e) {
+      card.innerHTML = `<h4>${f.name}</h4><p>Gagal proses: ${e.message}</p>`;
+      card.style.background = '#FF4D4D';
+      card.style.color = '#fff';
+    }
+  }
+  toast('Selesai ✓');
+}
+</script>
+</body>
+</html>

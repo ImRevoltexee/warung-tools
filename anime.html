@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cari Anime &amp; Lihat Skor — Database Anime Gratis</title>
+<meta name="description" content="Cari judul anime, lihat skor, episode, studio, sinopsis, dan link resmi. Data dari AniList dan MyAnimeList. Gratis tanpa login.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Cari <span class="hl">Anime</span></h1>
+    <p>Database lengkap dari AniList. Cari judul, lihat skor komunitas, sinopsis, dan link ke situs resminya.</p>
+  </section>
+
+  <section class="panel">
+    <label for="q">Judul anime</label>
+    <div class="row">
+      <input type="text" id="q" placeholder="contoh: jujutsu kaisen, one piece, spy x family" style="flex:3 1 240px">
+      <button class="btn green" style="flex:0 0 auto" onclick="cari()">🔍 Cari</button>
+    </div>
+    <p class="small">Tekan Enter buat cari cepat.</p>
+
+    <div id="out"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Catatan</h2>
+    <p class="sub">Halaman ini hanya menampilkan metadata: judul, skor, episode, studio, sinopsis, dan cover.</p>
+    <div class="note">Gue tidak menyediakan video atau streaming. Link yang ditampilkan mengarah ke halaman resmi (AniList / MyAnimeList) tempat lu bisa lihat info legal soal tayangnya di mana.</div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Data: AniList API</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+function kartu(a) {
+  const skor = a.skor ? `<span class="chip">★ ${a.skor}</span>` : '<span class="chip off">belum ada skor</span>';
+  const genre = (a.genre || []).slice(0, 4).map(g => `<span class="chip" style="background:#FFD400">${g}</span>`).join(' ');
+  return `
+    <div class="res" style="display:flex;gap:16px;flex-wrap:wrap">
+      ${a.gambar ? `<img src="${a.gambar}" alt="cover ${a.judul}" style="max-width:150px;flex:0 0 auto">` : ''}
+      <div style="flex:1 1 260px">
+        <h4>${a.judul}</h4>
+        ${a.judul_jp ? `<p class="small" style="margin:2px 0 8px">${a.judul_jp}</p>` : ''}
+        <p style="margin:0 0 8px">${skor}
+          ${a.tipe ? `<span class="chip" style="background:#4D9CFF">${a.tipe}</span>` : ''}
+          ${a.episode ? `<span class="chip" style="background:#B78BFF">${a.episode} eps</span>` : ''}
+          ${a.tahun ? `<span class="chip" style="background:#FF8A3D">${a.tahun}</span>` : ''}
+        </p>
+        ${genre ? `<p style="margin:0 0 8px">${genre}</p>` : ''}
+        ${a.studio?.length ? `<p class="small" style="margin:0 0 8px">Studio: ${a.studio.join(', ')}</p>` : ''}
+        ${a.sinopsis ? `<p style="font-size:14px;margin:0 0 10px">${a.sinopsis}${a.sinopsis.length >= 890 ? '…' : ''}</p>` : ''}
+        <div class="btns" style="margin-top:6px">
+          ${a.link ? `<a class="btn ghost" href="${a.link}" target="_blank" rel="noopener">📄 Halaman resmi</a>` : ''}
+          ${a.trailer ? `<a class="btn blue" href="${a.trailer}" target="_blank" rel="noopener">▶️ Trailer</a>` : ''}
+          <button class="btn purple" onclick="copy(${JSON.stringify(a.judul)})">📋 Copy Judul</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function cari() {
+  const q = document.getElementById('q').value.trim();
+  const out = document.getElementById('out');
+  if (!q) { out.innerHTML = '<div class="res" style="background:#FF4D4D;color:#fff">Isi judul dulu ya.</div>'; return; }
+
+  out.innerHTML = '<div class="res"><span class="spin">⏳</span> Mencari "' + q + '"...</div>';
+  try {
+    const j = await api('/api/anime?q=' + encodeURIComponent(q) + '&limit=12');
+    if (!j.data.length) { out.innerHTML = '<div class="res">Gak ketemu anime dengan judul itu. Coba kata kunci lain.</div>'; return; }
+    out.innerHTML = `<p class="small">Ketemu ${j.jumlah} hasil · sumber: ${j.sumber}</p>` + j.data.map(kartu).join('');
+  } catch (e) {
+    out.innerHTML = '<div class="res" style="background:#FF4D4D;color:#fff">Gagal ambil data: ' + e.message + '</div>';
+  }
+}
+
+document.getElementById('q').addEventListener('keydown', e => { if (e.key === 'Enter') cari(); });
+</script>
+</body>
+</html>

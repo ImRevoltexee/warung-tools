@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Split Bill Online — Bagi Tagihan Rata atau Per Item</title>
+<meta name="description" content="Bagi tagihan makan bareng atau patungan: rata per orang atau per item, plus pajak dan service. Ada tombol kirim ke WhatsApp.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Split <span class="hl">Bill</span></h1>
+    <p>Habis makan bareng, gak ada yang mau itung. Masukin orangnya, masukin itemnya, keluar hasilnya.</p>
+  </section>
+
+  <section class="panel">
+    <label for="mode">Cara bagi</label>
+    <select id="mode" onchange="render()">
+      <option value="rata">Rata — semua bayar sama</option>
+      <option value="item">Per item — tiap orang bayar yang dia pesan</option>
+    </select>
+
+    <label>Orang yang ikut</label>
+    <div id="orangBox"></div>
+    <div class="btns"><button class="btn green" onclick="tambahOrang()">➕ Tambah Orang</button></div>
+
+    <div id="itemArea" style="display:none">
+      <label>Item pesanan</label>
+      <div id="itemBox"></div>
+      <div class="btns"><button class="btn green" onclick="tambahItem()">➕ Tambah Item</button></div>
+      <p class="small">Satu item bisa dibagi beberapa orang (misal nasi goreng berdua). Pisahkan nama dengan koma.</p>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="pajak">Pajak (%)</label>
+        <input type="number" id="pajak" value="10" min="0" max="30" oninput="render()">
+      </div>
+      <div>
+        <label for="service">Service (%)</label>
+        <input type="number" id="service" value="5" min="0" max="30" oninput="render()">
+      </div>
+      <div>
+        <label for="diskon">Diskon / voucher (Rp)</label>
+        <input type="number" id="diskon" value="0" min="0" oninput="render()">
+      </div>
+    </div>
+
+    <div id="hasil"></div>
+    <div class="btns">
+      <button class="btn purple" onclick="copyHasil()">📋 Copy Rincian</button>
+      <button class="btn green" onclick="waKirim()">💬 Kirim ke WhatsApp</button>
+    </div>
+
+    <div class="note">Pembulatan dilakukan ke atas ke Rp100 terdekat biar uangnya gampang dikumpulin. Selisih pembulatan saya tampilkan di bawah.</div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Tidak ada data yang dikirim ke server.</span></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+let orang = ['Budi', 'Sari', 'Andi'];
+let item = [
+  { nama: 'Nasi goreng', harga: 35000, siapa: 'Budi' },
+  { nama: 'Mie ayam', harga: 30000, siapa: 'Sari' },
+  { nama: 'Es teh manis', harga: 8000, siapa: 'Budi, Sari, Andi' },
+  { nama: 'Ayam geprek', harga: 40000, siapa: 'Andi' },
+];
+
+function tambahOrang() {
+  orang.push('Orang ' + (orang.length + 1));
+  render();
+}
+
+function hapusOrang(i) { orang.splice(i, 1); render(); }
+
+function tambahItem() {
+  item.push({ nama: '', harga: 0, siapa: orang[0] || '' });
+  render();
+}
+
+function hapusItem(i) { item.splice(i, 1); render(); }
+
+function gambarInput() {
+  const ob = document.getElementById('orangBox');
+  ob.innerHTML = '';
+  orang.forEach((o, i) => {
+    const d = document.createElement('div');
+    d.className = 'row'; d.style.marginBottom = '8px';
+    d.innerHTML = `<input type="text" value="${o.replace(/"/g, '&quot;')}" oninput="orang[${i}]=this.value;gambarInput();render()">
+      <button class="btn ghost" style="flex:0 0 auto;padding:10px 14px" onclick="hapusOrang(${i})">✕</button>`;
+    ob.appendChild(d);
+  });
+
+  const ib = document.getElementById('itemBox');
+  ib.innerHTML = '';
+  item.forEach((r, i) => {
+    const d = document.createElement('div');
+    d.className = 'row'; d.style.marginBottom = '8px';
+    d.innerHTML = `
+      <input type="text" placeholder="Nama item" value="${(r.nama || '').replace(/"/g, '&quot;')}" style="flex:3 1 180px"
+             oninput="item[${i}].nama=this.value;render()">
+      <input type="number" placeholder="Harga" value="${r.harga || ''}" style="flex:2 1 110px"
+             oninput="item[${i}].harga=+this.value||0;render()">
+      <input type="text" placeholder="Untuk siapa (pisah pakai koma)" value="${(r.siapa || '').replace(/"/g, '&quot;')}" style="flex:3 1 200px"
+             oninput="item[${i}].siapa=this.value;render()">
+      <button class="btn ghost" style="flex:0 0 auto;padding:10px 14px" onclick="hapusItem(${i})">✕</button>`;
+    ib.appendChild(d);
+  });
+}
+
+function bagiItem() {
+  // Hasil: { nama: subtotal }
+  const hasil = {};
+  orang.forEach(o => hasil[o.trim()] = 0);
+
+  for (const r of item) {
+    const harga = +r.harga || 0;
+    if (!harga) continue;
+    const daftar = String(r.siapa || '').split(',').map(s => s.trim()).filter(Boolean)
+      .filter(s => s in hasil); // hanya nama yang ada di daftar orang
+    if (!daftar.length) {
+      // tidak ada yang cocok: bebankan ke orang pertama
+      const kunci = Object.keys(hasil)[0];
+      if (kunci) hasil[kunci] += harga;
+      continue;
+    }
+    const per = harga / daftar.length;
+    for (const d of daftar) hasil[d] += per;
+  }
+  return hasil;
+}
+
+function render() {
+  const mode = document.getElementById('mode').value;
+  document.getElementById('itemArea').style.display = mode === 'item' ? 'block' : 'none';
+
+  let subtotal = 0;
+  let rincian = {};
+
+  if (mode === 'item') {
+    rincian = bagiItem();
+    subtotal = Object.values(rincian).reduce((a, b) => a + b, 0);
+  } else {
+    subtotal = item.reduce((s, r) => s + (+r.harga || 0), 0);
+    const per = orang.length ? subtotal / orang.length : 0;
+    orang.forEach(o => rincian[o.trim()] = per);
+  }
+
+  const pj = +document.getElementById('pajak').value || 0;
+  const sv = +document.getElementById('service').value || 0;
+  const disc = +document.getElementById('diskon').value || 0;
+
+  const tambahan = subtotal * (pj + sv) / 100;
+  const totalSebelumDisc = subtotal + tambahan;
+  const total = Math.max(0, totalSebelumDisc - disc);
+  const rasio = totalSebelumDisc ? total / totalSebelumDisc : 0;
+
+  const rowsFinal = [];
+  let jumlahBulat = 0;
+
+  for (const [nama, sub] of Object.entries(rincian)) {
+    const setelah = sub * rasio;
+    const bulat = Math.ceil(setelah / 100) * 100;
+    jumlahBulat += bulat;
+    rowsFinal.push({ nama, sub, setelah, bulat });
+  }
+
+  const selisih = jumlahBulat - total;
+
+  document.getElementById('hasil').innerHTML = `
+    <div class="res">
+      <h4>Total tagihan: ${rupiah(total)}</h4>
+      <dl class="kv">
+        <dt>Subtotal</dt><dd>${rupiah(subtotal)}</dd>
+        <dt>Pajak ${pj}% + Service ${sv}%</dt><dd>+${rupiah(tambahan)}</dd>
+        ${disc ? `<dt>Diskon</dt><dd>-${rupiah(disc)}</dd>` : ''}
+        <dt>Total</dt><dd><b>${rupiah(total)}</b></dd>
+        <dt>Jumlah orang</dt><dd>${orang.length}</dd>
+        <dt>Rata-rata</dt><dd>${orang.length ? rupiah(total / orang.length) : '-'}</dd>
+      </dl>
+      <h4 style="margin-top:16px">Yang harus dibayar</h4>
+      <dl class="kv">
+        ${rowsFinal.map(r => `<dt>${r.nama}</dt><dd><b>${rupiah(r.bulat)}</b> <span class="small">(sebelum dibulatkan ${rupiah(r.setelah)})</span></dd>`).join('')}
+      </dl>
+      ${selisih !== 0 ? `<p class="small">Selisih pembulatan: ${rupiah(selisih)} (dipakai buat tips atau kas bareng).</p>` : ''}
+    </div>`;
+}
+
+function teksHasil() {
+  const mode = document.getElementById('mode').value;
+  const L = ['💸 RINCIAN SPLIT BILL', ''];
+
+  let subtotal = 0, rincian = {};
+  if (mode === 'item') {
+    rincian = bagiItem();
+    subtotal = Object.values(rincian).reduce((a, b) => a + b, 0);
+  } else {
+    subtotal = item.reduce((s, r) => s + (+r.harga || 0), 0);
+    const per = orang.length ? subtotal / orang.length : 0;
+    orang.forEach(o => rincian[o.trim()] = per);
+  }
+
+  const pj = +document.getElementById('pajak').value || 0;
+  const sv = +document.getElementById('service').value || 0;
+  const disc = +document.getElementById('diskon').value || 0;
+  const tambahan = subtotal * (pj + sv) / 100;
+  const totalSebelumDisc = subtotal + tambahan;
+  const total = Math.max(0, totalSebelumDisc - disc);
+  const rasio = totalSebelumDisc ? total / totalSebelumDisc : 0;
+
+  L.push(`Subtotal : ${rupiah(subtotal)}`);
+  if (pj + sv > 0) L.push(`Pajak+Service (${pj}%+${sv}%) : +${rupiah(tambahan)}`);
+  if (disc) L.push(`Diskon : -${rupiah(disc)}`);
+  L.push(`TOTAL : ${rupiah(total)}`);
+  L.push('');
+  L.push('Bayar masing-masing:');
+  for (const [nama, sub] of Object.entries(rincian)) {
+    L.push(`• ${nama}: ${rupiah(Math.ceil((sub * rasio) / 100) * 100)}`);
+  }
+  L.push('');
+  L.push('Dihitung pakai Warung Tools');
+  return L.join('\n');
+}
+
+function copyHasil() { copy(teksHasil()); }
+function waKirim() { window.open('https://wa.me/?text=' + encodeURIComponent(teksHasil()), '_blank'); }
+
+gambarInput();
+render();
+</script>
+</body>
+</html>

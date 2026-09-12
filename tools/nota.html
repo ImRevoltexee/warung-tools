@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bikin Nota / Struk Warung 58mm — Siap Cetak Printer Thermal</title>
+<meta name="description" content="Bikin nota dan struk warung format 58mm siap cetak di printer thermal. Hitung otomatis total dan kembalian. Gratis, tanpa login.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Nota <span class="hl">Warung</span></h1>
+    <p>Isi item, klik cetak. Format 58mm, pas buat printer thermal murah yang banyak dijual online.</p>
+  </section>
+
+  <section class="panel no-print">
+    <label for="namaWarung">Nama warung</label>
+    <input type="text" id="namaWarung" value="Warung Bu Sari" oninput="render()">
+
+    <div class="row">
+      <div>
+        <label for="alamat">Alamat / kontak</label>
+        <input type="text" id="alamat" value="Jl. Merdeka No. 10 · 0812-3456-7890" oninput="render()">
+      </div>
+      <div>
+        <label for="kasir">Kasir</label>
+        <input type="text" id="kasir" value="Sari" oninput="render()">
+      </div>
+    </div>
+
+    <label>Daftar belanja</label>
+    <div id="items"></div>
+    <div class="btns">
+      <button class="btn green" onclick="tambah()">➕ Tambah Item</button>
+      <button class="btn ghost" onclick="contoh()">Isi Contoh</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="diskon">Diskon (%)</label>
+        <input type="number" id="diskon" value="0" min="0" max="100" oninput="render()">
+      </div>
+      <div>
+        <label for="bayar">Uang dibayar</label>
+        <input type="number" id="bayar" value="50000" min="0" oninput="render()">
+      </div>
+    </div>
+
+    <label for="footer">Catatan bawah struk</label>
+    <input type="text" id="footer" value="Terima kasih, silakan datang lagi 🙏" oninput="render()">
+
+    <div class="btns">
+      <button class="btn blue" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+      <button class="btn purple" onclick="copyStruk()">📋 Copy Teks Nota</button>
+      <button class="btn orange" onclick="waStruk()">💬 Kirim ke WhatsApp</button>
+    </div>
+    <div class="note">Buat simpan jadi PDF: klik Cetak, lalu pilih "Save as PDF". Buat printer thermal, set ukuran kertas 58mm di dialog print.</div>
+  </section>
+
+  <section class="panel">
+    <h2 style="font-size:18px">Preview struk</h2>
+    <div class="struk" id="struk"></div>
+  </section>
+</main>
+
+<footer class="no-print"><div class="wrap"><span>Warung Tools</span><span class="small">Data tidak disimpan di server.</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+let rows = [{ nama: 'Beras 5kg', qty: 1, harga: 68000 }, { nama: 'Minyak goreng 2L', qty: 1, harga: 38000 }];
+
+function tambah(nama = '', qty = 1, harga = '') {
+  rows.push({ nama, qty, harga });
+  gambarBaris();
+}
+
+function hapus(i) {
+  rows.splice(i, 1);
+  if (!rows.length) rows.push({ nama: '', qty: 1, harga: '' });
+  gambarBaris();
+}
+
+function contoh() {
+  rows = [
+    { nama: 'Beras 5kg', qty: 1, harga: 68000 },
+    { nama: 'Minyak goreng 2L', qty: 1, harga: 38000 },
+    { nama: 'Telur 1kg', qty: 2, harga: 29000 },
+    { nama: 'Kopi sachet', qty: 5, harga: 2500 },
+  ];
+  gambarBaris();
+}
+
+function gambarBaris() {
+  const box = document.getElementById('items');
+  box.innerHTML = '';
+  rows.forEach((r, i) => {
+    const d = document.createElement('div');
+    d.className = 'row';
+    d.style.marginBottom = '8px';
+    d.innerHTML = `
+      <input type="text" placeholder="Nama barang" value="${r.nama.replace(/"/g, '&quot;')}" style="flex:3 1 200px"
+             oninput="rows[${i}].nama=this.value;render()">
+      <input type="number" placeholder="Qty" value="${r.qty}" min="1" style="flex:1 1 70px"
+             oninput="rows[${i}].qty=+this.value||1;render()">
+      <input type="number" placeholder="Harga satuan" value="${r.harga}" min="0" style="flex:2 1 120px"
+             oninput="rows[${i}].harga=+this.value||0;render()">
+      <button class="btn ghost" style="flex:0 0 auto;padding:10px 14px" onclick="hapus(${i})">✕</button>`;
+    box.appendChild(d);
+  });
+  render();
+}
+
+function hitung() {
+  const valid = rows.filter(r => r.nama.trim() && r.qty > 0);
+  const subtotal = valid.reduce((s, r) => s + r.qty * (+r.harga || 0), 0);
+  const diskonPct = Math.min(Math.max(+document.getElementById('diskon').value || 0, 0), 100);
+  const diskon = Math.round(subtotal * diskonPct / 100);
+  const total = subtotal - diskon;
+  const bayar = +document.getElementById('bayar').value || 0;
+  return { valid, subtotal, diskon, diskonPct, total, bayar, kembali: bayar - total };
+}
+
+function garis(c = '-') { return c.repeat(32); }
+function kiriKanan(kiri, kanan) {
+  const sisa = 32 - kiri.length - kanan.length;
+  return kiri + ' '.repeat(Math.max(sisa, 1)) + kanan;
+}
+
+function teksStruk() {
+  const { valid, subtotal, diskon, diskonPct, total, bayar, kembali } = hitung();
+  const now = new Date();
+  const tgl = now.toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+  const rp = n => 'Rp' + Math.round(n).toLocaleString('id-ID');
+  const L = [];
+
+  L.push((document.getElementById('namaWarung').value || 'WARUNG').toUpperCase());
+  L.push(document.getElementById('alamat').value || '');
+  L.push(garis());
+  L.push('Tanggal : ' + tgl);
+  L.push('Kasir   : ' + (document.getElementById('kasir').value || '-'));
+  L.push(garis());
+
+  for (const r of valid) {
+    L.push(r.nama);
+    L.push(kiriKanan(`  ${r.qty} x ${rp(r.harga)}`, rp(r.qty * r.harga)));
+  }
+
+  L.push(garis());
+  L.push(kiriKanan('Subtotal', rp(subtotal)));
+  if (diskon > 0) L.push(kiriKanan(`Diskon ${diskonPct}%`, '-' + rp(diskon)));
+  L.push(kiriKanan('TOTAL', rp(total)));
+  L.push(kiriKanan('Bayar', rp(bayar)));
+  L.push(kiriKanan('Kembali', rp(kembali)));
+  L.push(garis());
+  L.push(document.getElementById('footer').value || '');
+  L.push('');
+  L.push('  dibuat pakai Warung Tools');
+  return L.join('\n');
+}
+
+function render() {
+  document.getElementById('struk').textContent = teksStruk();
+}
+
+function copyStruk() {
+  copy(teksStruk());
+}
+
+function waStruk() {
+  const t = encodeURIComponent('```\n' + teksStruk() + '\n```');
+  window.open('https://wa.me/?text=' + t, '_blank');
+}
+
+gambarBaris();
+</script>
+</body>
+</html>

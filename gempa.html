@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gempa Terbaru Hari Ini — Data Resmi BMKG</title>
+<meta name="description" content="Info gempa bumi terbaru di Indonesia dari data resmi BMKG: magnitudo, kedalaman, lokasi, dan potensi tsunami.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Gempa <span class="hl">Terbaru</span></h1>
+    <p>Data langsung dari BMKG. Kalau lu ngerasa goyang, cek di sini dulu sebelum panik.</p>
+  </section>
+
+  <section class="panel">
+    <div class="btns" style="margin-top:0">
+      <button class="btn green" onclick="muat()">🔄 Refresh</button>
+      <span id="waktu" class="small" style="align-self:center"></span>
+    </div>
+    <div id="out"><div class="res"><span class="spin">⏳</span> Ambil data BMKG...</div></div>
+  </section>
+
+  <section class="panel">
+    <h2>Gempa terakhir (15 terbaru)</h2>
+    <div id="list"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Baca angka gempa</h2>
+    <p class="sub">Biar gak salah tafsir:</p>
+    <ul style="font-size:15px;font-weight:600;line-height:1.9;padding-left:20px">
+      <li><b>Magnitudo</b> — kekuatan getaran. Di bawah 4 biasanya jarang dirasakan.</li>
+      <li><b>Kedalaman</b> — makin dangkal makin terasa. Di bawah 10 km itu dangkal.</li>
+      <li><b>Potensi</b> — BMKG akan bilang jelas kalau ada potensi tsunami.</li>
+      <li>Yang penting bukan cuma magnitudo, tapi jarak dari kota lu dan kedalamannya.</li>
+    </ul>
+    <div class="note">Sumber: BMKG (data.bmkg.go.id), data publik resmi. Halaman ini cuma menampilkan, bukan sumber utama peringatan dini. Selalu ikuti kanal resmi BMKG.</div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Warung Tools</span><span class="small">Data: BMKG</span></div></footer>
+
+<script src="/assets/app.js"></script>
+<script>
+function baris(g) {
+  if (!g) return '';
+  const mag = Number(g.magnitude) || 0;
+  const warna = mag >= 6 ? '#FF4D4D' : mag >= 5 ? '#FF8A3D' : mag >= 4 ? '#FFD400' : '#37D67A';
+  const ts = /tsunami/i.test(g.potensi || '') && !/tidak/i.test(g.potensi || '');
+  return `
+    <div class="res">
+      <h4><span style="background:${warna};border:3px solid #0B0B0B;border-radius:8px;padding:1px 9px">M ${g.magnitude}</span> ${g.wilayah || ''}</h4>
+      <dl class="kv">
+        <dt>Waktu</dt><dd>${g.tanggal || ''} ${g.jam || ''}</dd>
+        <dt>Kedalaman</dt><dd>${g.kedalaman || '-'}</dd>
+        <dt>Koordinat</dt><dd>${g.lintang || ''} · ${g.bujur || ''}</dd>
+        <dt>Dirasakan</dt><dd>${g.dirasakan || 'belum ada laporan'}</dd>
+        <dt>Potensi</dt><dd>${g.potensi || '-'}</dd>
+      </dl>
+      ${ts ? '<div class="note bad">⚠️ BMKG mencatat potensi tsunami. Ikuti instruksi resmi.</div>' : ''}
+      <div class="btns">
+        <a class="btn ghost" href="https://www.google.com/maps?q=${g.koordinat}" target="_blank" rel="noopener">🗺️ Lihat di Maps</a>
+        <button class="btn purple" onclick="copy(${JSON.stringify((g.tanggal || '') + ' ' + (g.jam || '') + ' M' + g.magnitude + ' — ' + (g.wilayah || '') + ' (kedalaman ' + (g.kedalaman || '-') + ')')})">📋 Copy Info</button>
+      </div>
+    </div>`;
+}
+
+async function muat() {
+  const out = document.getElementById('out');
+  const list = document.getElementById('list');
+  out.innerHTML = '<div class="res"><span class="spin">⏳</span> Ambil data BMKG...</div>';
+  try {
+    const j = await api('/api/gempa');
+    out.innerHTML = j.data.terbaru ? baris(j.data.terbaru) : '<div class="res">Belum ada data gempa terbaru.</div>';
+    list.innerHTML = j.data.terakhir.length
+      ? j.data.terakhir.map(baris).join('')
+      : '<div class="res">Tidak ada data tambahan.</div>';
+    document.getElementById('waktu').textContent = 'Diperbarui: ' + new Date().toLocaleTimeString('id-ID');
+  } catch (e) {
+    out.innerHTML = '<div class="res" style="background:#FF4D4D;color:#fff">Gagal ambil data BMKG: ' + e.message + '</div>';
+  }
+}
+
+muat();
+</script>
+</body>
+</html>
