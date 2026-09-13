@@ -1,7 +1,7 @@
 // Shared helpers for all /api routes.
 // Vercel skips files starting with "_" when creating routes, so this is import-safe.
 
-const UA = 'WarungTools/1.0 (+https://github.com/)';
+const UA = 'MRTools/1.0 (+https://github.com/)';
 
 function send(res, status, body, cacheSeconds = 300) {
   res.statusCode = status;

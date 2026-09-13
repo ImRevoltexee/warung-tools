@@ -3,20 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Warung Tools — Tools Gratis & API Publik buat Anak Indonesia</title>
-<meta name="description" content="Kumpulan tools gratis tanpa login: generator link WhatsApp, QR code, format JSON, kompres gambar, nota warung, plus API publik anime, gempa BMKG, cuaca, dan jadwal sholat.">
-<meta name="keywords" content="tools gratis, wa link generator, qr code, kompres gambar, api indonesia, jadwal sholat, gempa bmkg">
-<meta property="og:title" content="Warung Tools — Tools Gratis & API Publik">
-<meta property="og:description" content="14 tools gratis tanpa login. Plus REST API publik buat developer.">
+<title>MR.TOOLS — Tools & API Gratis buat Anak Indonesia</title>
+<meta name="description" content="23 tools gratis tanpa login: link WA, QR, JSON, UUID, hash, warna, nota warung, plus API publik anime, gempa BMKG, cuaca, jadwal sholat. 100% gratis, dukung via donasi.">
+<meta name="keywords" content="tools gratis, wa link generator, qr code, uuid, hash generator, kompres gambar, api indonesia, jadwal sholat, gempa bmkg">
+<meta property="og:title" content="MR.TOOLS — Tools & API Gratis">
+<meta property="og:description" content="23 tools gratis tanpa login. API publik bebas dipakai. 100% gratis, support via Saweria/Sociabuzz.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
 
-<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
 
 <main class="wrap">
   <div class="announce" id="ann"></div>
@@ -24,28 +24,30 @@
     <div class="hero-grid">
       <div>
         <h1>Tools gratisan,<br><span class="hl">tanpa ribet</span></h1>
-        <p>Semua jalan langsung di HP lu. Gak ada iklan nyangkut. Butuh quota gede buat project? Daftar gratis, dapat API key sendiri.</p>
+        <p id="tagline">Semua jalan langsung di HP lu. Tanpa login, tanpa paywall, tanpa quota wajib.</p>
         <div class="btns">
-          <a class="btn pink" href="/signup">Daftar gratis →</a>
+          <a class="btn pink" href="/support">💛 Support</a>
           <a class="btn ghost" href="#api">Lihat API</a>
         </div>
         <div class="stats">
-          <span class="chip">⚡ 13 tools</span>
-          <span class="chip">🌐 4 API</span>
-          <span class="chip">🔑 key gratis</span>
+          <span class="chip">⚡ 23 tools</span>
+          <span class="chip">🌐 5 API</span>
+          <span class="chip">💯 gratis</span>
         </div>
       </div>
       <div class="stack" aria-hidden="true">
         <div class="mini m1"><b>💬 wa link</b>wa.me/62xxx?text=halo</div>
-        <div class="mini m2"><b>🔑 api key</b>wt_live_9f2a… quota 1000/hari</div>
-        <div class="mini m3"><b>🌋 gempa 4.7</b>Mbay, Nagekeo — BMKG</div>
+        <div class="mini m2"><b>💛 support</b>saweria • sociabuzz</div>
+        <div class="mini m3"><b>🌋 gempa 4.7</b>BMKG — real-time</div>
       </div>
     </div>
   </section>
-  <div class="marquee"><span>tools gratis ✦ api publik ✦ tanpa login buat tools ✦ api key gratis ✦ neo-brutalism ✦&nbsp;</span><span>tools gratis ✦ api publik ✦ tanpa login buat tools ✦ api key gratis ✦ neo-brutalism ✦&nbsp;</span></div>
+  <div class="marquee"><span>100% gratis ✦ tanpa login ✦ api publik ✦ support via donasi ✦ neo-brutalism ✦&nbsp;</span><span>100% gratis ✦ tanpa login ✦ api publik ✦ support via donasi ✦ neo-brutalism ✦&nbsp;</span></div>
 
-  <h2 style="font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;margin:26px 0 0">🧰 Tools</h2>
-  <section class="grid">
+  <div class="searchbar"><input id="q" type="text" placeholder="🔍 cari tools... misal: qr, json, umur" autocomplete="off"></div>
+
+  <div class="sec-head"><span class="n">01</span><h2>🧰 Tools favorit</h2><span class="d">paling sering dipakai</span></div>
+  <section class="grid" id="g1">
     <a class="card" href="/tools/wa-link">
       <div class="ico">💬</div><h3>Link WhatsApp</h3>
       <p>Bikin link wa.me dengan pesan otomatis. Tinggal klik, langsung kebuka chat.</p>
@@ -55,16 +57,6 @@
       <div class="ico">🔳</div><h3>QR Code</h3>
       <p>Ubah teks, link, atau nomor WA jadi QR. Bisa didownload PNG.</p>
       <span class="tag">Populer</span>
-    </a>
-    <a class="card" href="/tools/json">
-      <div class="ico">🧩</div><h3>Format JSON</h3>
-      <p>Rapihin, minify, dan validasi JSON. Ada pesan error yang jelas kalau rusak.</p>
-      <span class="tag">Dev</span>
-    </a>
-    <a class="card" href="/tools/base64">
-      <div class="ico">🔡</div><h3>Base64</h3>
-      <p>Encode dan decode Base64, termasuk teks unicode dan file kecil.</p>
-      <span class="tag">Dev</span>
     </a>
     <a class="card" href="/tools/password">
       <div class="ico">🔐</div><h3>Password Generator</h3>
@@ -81,11 +73,6 @@
       <p>Bikin struk 58mm siap cetak untuk printer thermal. Cocok buat warung.</p>
       <span class="tag">UMKM</span>
     </a>
-    <a class="card" href="/tools/margin">
-      <div class="ico">📊</div><h3>Kalkulator Margin</h3>
-      <p>Hitung harga jual dan untung dari modal. Ada simulasi diskon.</p>
-      <span class="tag">UMKM</span>
-    </a>
     <a class="card" href="/tools/splitbill">
       <div class="ico">🤝</div><h3>Split Bill</h3>
       <p>Bagi tagihan rata atau per item, plus pajak dan service. Ada tombol WA.</p>
@@ -93,11 +80,93 @@
     </a>
   </section>
 
-  <h2 style="font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;margin:26px 0 0">🌐 Data &amp; API Publik</h2>
-  <section class="grid">
+  <div class="sec-head"><span class="n">02</span><h2>🧑‍💻 Tools developer</h2><span class="d">json • uuid • hash • seo</span></div>
+  <section class="grid" id="g2">
+    <a class="card" href="/tools/json">
+      <div class="ico">🧩</div><h3>Format JSON</h3>
+      <p>Rapihin, minify, dan validasi JSON. Ada pesan error yang jelas kalau rusak.</p>
+      <span class="tag">Dev</span>
+    </a>
+    <a class="card" href="/tools/base64">
+      <div class="ico">🔡</div><h3>Base64</h3>
+      <p>Encode dan decode Base64, termasuk teks unicode dan file kecil.</p>
+      <span class="tag">Dev</span>
+    </a>
+    <a class="card" href="/tools/uuid">
+      <div class="ico">🆔</div><h3>UUID Generator</h3>
+      <p>Bikin ID unik v4, bisa bulk 100 sekaligus. Buat DB & API.</p>
+      <span class="tag">Baru</span>
+    </a>
+    <a class="card" href="/tools/hash">
+      <div class="ico">🔒</div><h3>Hash Generator</h3>
+      <p>MD5, SHA-1, SHA-256, SHA-512 sekaligus. Cek integritas file.</p>
+      <span class="tag">Baru</span>
+    </a>
+    <a class="card" href="/tools/meta-seo">
+      <div class="ico">🏷️</div><h3>Meta SEO</h3>
+      <p>Generate meta tag + preview Google. Cek panjang judul & deskripsi.</p>
+      <span class="tag">Baru</span>
+    </a>
+    <a class="card" href="/tools/yt-thumb">
+      <div class="ico">🖼️</div><h3>YT Thumbnail</h3>
+      <p>Ambil cover HD dari link YouTube. Buat referensi desain.</p>
+      <span class="tag">Baru</span>
+    </a>
+  </section>
+
+  <div class="sec-head"><span class="n">03</span><h2>📝 Teks & warna</h2><span class="d">nulis • desain • konten</span></div>
+  <section class="grid" id="g3">
+    <a class="card" href="/tools/wordcount">
+      <div class="ico">🔢</div><h3>Hitung Kata</h3>
+      <p>Kata, karakter, kalimat + estimasi waktu baca. Buat skripsi & artikel.</p>
+      <span class="tag">Baru</span>
+    </a>
+    <a class="card" href="/tools/case">
+      <div class="ico">🔤</div><h3>Ubah Case</h3>
+      <p>UPPERCASE, lowercase, Capitalize, aLtErNaTiF. Sedetik rapi.</p>
+      <span class="tag">Baru</span>
+    </a>
+    <a class="card" href="/tools/color">
+      <div class="ico">🎨</div><h3>Warna Picker</h3>
+      <p>Pilih warna, dapat HEX + RGB + HSL sekaligus. Buat coding & desain.</p>
+      <span class="tag">Baru</span>
+    </a>
+    <a class="card" href="/tools/lorem">
+      <div class="ico">📄</div><h3>Lorem Ipsum</h3>
+      <p>Teks dummy latin + Bahasa Indonesia buat mockup desain.</p>
+      <span class="tag">Baru</span>
+    </a>
+  </section>
+
+  <div class="sec-head"><span class="n">04</span><h2>🏪 Warung & harian</h2><span class="d">jualan • waktu • catetan</span></div>
+  <section class="grid" id="g4">
+    <a class="card" href="/tools/margin">
+      <div class="ico">📊</div><h3>Kalkulator Margin</h3>
+      <p>Hitung harga jual dan untung dari modal. Ada simulasi diskon.</p>
+      <span class="tag">UMKM</span>
+    </a>
+    <a class="card" href="/tools/umur">
+      <div class="ico">🎂</div><h3>Kalkulator Umur</h3>
+      <p>Umur tahun-bulan-hari + countdown ultah berikutnya.</p>
+      <span class="tag">Baru</span>
+    </a>
+    <a class="card" href="/tools/stopwatch">
+      <div class="ico">⏱️</div><h3>Stopwatch & Timer</h3>
+      <p>Stopwatch + countdown. Buat masak, olahraga, presentasi.</p>
+      <span class="tag">Baru</span>
+    </a>
+    <a class="card" href="/tools/todo">
+      <div class="ico">✅</div><h3>Todo List</h3>
+      <p>Catatan tugas offline, tersimpan di HP. Tanpa akun.</p>
+      <span class="tag">Baru</span>
+    </a>
+  </section>
+
+  <div class="sec-head"><span class="n">05</span><h2>🌐 Data & API publik</h2><span class="d">gratis, tanpa key wajib</span></div>
+  <section class="grid" id="g5">
     <a class="card" href="/anime">
       <div class="ico">🎌</div><h3>Cari Anime</h3>
-      <p>Cari judul, lihat skor, sinopsis, dan link resmi. Data dari MyAnimeList.</p>
+      <p>Cari judul, lihat skor, sinopsis, dan link resmi. Data AniList.</p>
       <span class="tag">API</span>
     </a>
     <a class="card" href="/gempa">
@@ -117,25 +186,65 @@
     </a>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="api">
     <h2>API buat Developer</h2>
-    <p class="sub">Semua endpoint bebas dipakai, balikin JSON, gak perlu API key.</p>
+    <p class="sub">Semua endpoint bebas dipakai, balikin JSON. Tanpa key wajib. Daftar opsional kalau mau key sendiri + quota tercatat di dashboard.</p>
     <ul style="font-size:14px;font-weight:600;padding-left:20px">
       <li><code>GET /api/anime?q=naruto&amp;limit=10</code> — cari anime</li>
       <li><code>GET /api/anime?id=20</code> — detail satu anime</li>
       <li><code>GET /api/gempa</code> — gempa terbaru BMKG</li>
       <li><code>GET /api/cuaca?kota=Jakarta</code> — cuaca + prakiraan</li>
       <li><code>GET /api/sholat?kota=Jakarta</code> — jadwal sholat hari ini</li>
-      <li><code>GET /api/sholat?kota=Jakarta&amp;tanggal=2026-09-20</code> — jadwal tanggal tertentu</li>
+      <li><code>GET /api/donate</code> — leaderboard donasi</li>
     </ul>
-    <div class="note">Data gempa dan sholat diambil dari sumber publik resmi (BMKG, myQuran). Anime dari Jikan/MyAnimeList. Gue cuma nyalurin plus cache biar cepat — bukan host video atau konten bajakan.</div>
+    <div class="note">Data gempa dan sholat dari sumber publik resmi (BMKG, myQuran). Anime dari AniList. Gue cuma nyalurin plus cache — bukan host konten bajakan.</div>
+    <div class="btns"><a class="btn blue" href="/support">💛 Support biar hidup</a><a class="btn ghost" href="/signup">Daftar (opsional)</a></div>
   </section>
+
+  <section class="panel">
+    <h2>💛 Kenapa gratis?</h2>
+    <p class="sub">Karena tools begini harusnya bisa diakses siapa aja. Server + domain dibayar dari donasi, bukan paywall.</p>
+    <div class="btns"><a class="btn pink" href="/support">Lihat donasi →</a></div>
+  </section>
+  <div class="nohit panel" id="nohit"><h2>😅 Gak ketemu</h2><p class="sub">Coba kata lain, misal: qr, json, umur, warna.</p></div>
 </main>
 
 <footer><div class="wrap">
-  <span>Warung Tools — dibuat buat yang butuh cepet.</span>
-  <span class="small">Gratis dipakai. Silakan embed API-nya.</span>
+  <span><b data-site>MR.TOOLS</b> — dibuat buat yang butuh cepet.</span>
+  <span class="small">100% gratis • <a href="/support">support</a> • <a href="/login">masuk</a></span>
 </div></footer>
 <script src="/assets/app.js"></script>
+<script>
+// search filter client-side
+const qi=document.getElementById('q'),nh=document.getElementById('nohit');
+qi.addEventListener('input',()=>{
+  const s=qi.value.trim().toLowerCase();let n=0;
+  document.querySelectorAll('#g1 .card,#g2 .card,#g3 .card,#g4 .card,#g5 .card').forEach(c=>{
+    const hit=!s||c.textContent.toLowerCase().includes(s);
+    c.style.display=hit?'':'none';if(hit)n++;
+  });
+  document.querySelectorAll('.sec-head').forEach(h=>{
+    const g=h.nextElementSibling;
+    if(g&&g.classList.contains('grid')){
+      const any=[...g.querySelectorAll('.card')].some(c=>c.style.display!=='none');
+      h.style.display=any?'':'none';g.style.display=any?'':'none';
+    }
+  });
+  nh.style.display=n?'none':'block';
+});
+// tilt 3D ringan buat kartu (murni CSS transform, mati di HP touch)
+if(matchMedia('(hover:hover)').matches){
+  document.querySelectorAll('.card.tilt,.card').forEach(c=>{
+    c.classList.add('tilt');
+    c.addEventListener('mousemove',e=>{
+      const r=c.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+      c.style.transform=`perspective(700px) rotateY(${x*10}deg) rotateX(${-y*10}deg) translate(-2px,-2px)`;
+      c.classList.add('hot');
+    });
+    c.addEventListener('mouseleave',()=>{c.style.transform='';c.classList.remove('hot');});
+  });
+}
+</script>
 </body>
 </html>

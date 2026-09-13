@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stopwatch & Timer — MR.TOOLS</title>
+<meta name="description" content="Stopwatch + countdown timer di browser. Gratis.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<style>.bigtime{font-family:var(--display);font-size:clamp(40px,10vw,72px);text-align:center;background:var(--ink);color:var(--yellow);border:var(--b);border-radius:16px;padding:10px;margin:14px 0;box-shadow:var(--sh)}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>Stopwatch <span class="hl">& Timer</span></h1><p>Masak mie, olahraga, presentasi.</p></section>
+<section class="panel"><h2>⏱️ Stopwatch</h2><div class="bigtime" id="sw">00:00.0</div>
+<div class="btns"><button class="btn green" id="sgo">Start</button><button class="btn orange" id="slap">Lap</button><button class="btn ghost" id="srs">Reset</button></div>
+<div class="out" id="laps"></div></section>
+<section class="panel"><h2>⏳ Timer</h2>
+<div class="row"><label class="lbl">Menit<input id="tm" type="number" value="5" min="0" max="999"></label>
+<label class="lbl">Detik<input id="ts" type="number" value="0" min="0" max="59"></label></div>
+<div class="bigtime" id="td">05:00</div>
+<div class="btns"><button class="btn p" id="tgo">Mulai</button><button class="btn ghost" id="trs">Reset</button></div></section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+let st=0,el=0,tm=null;
+function fmt(ms){const t=ms/1000;return String(Math.floor(t/60)).padStart(2,'0')+':'+String(Math.floor(t%60)).padStart(2,'0')+'.'+Math.floor(t%1*10);}
+$('#sgo').onclick=()=>{if(tm){clearInterval(tm);tm=null;$('#sgo').textContent='Start';return;}st=Date.now()-el;tm=setInterval(()=>{el=Date.now()-st;$('#sw').textContent=fmt(el);},100);$('#sgo').textContent='Pause';};
+$('#srs').onclick=()=>{clearInterval(tm);tm=null;el=0;$('#sw').textContent='00:00.0';$('#laps').textContent='';$('#sgo').textContent='Start';};
+$('#slap').onclick=()=>{if(el>0)$('#laps').textContent+=`Lap: ${fmt(el)}\n`;};
+let cd=null,left=0;
+function tshow(){ $('#td').textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0');}
+$('#tgo').onclick=()=>{
+  if(cd){clearInterval(cd);cd=null;$('#tgo').textContent='Mulai';return;}
+  if(left<=0)left=(parseInt($('#tm').value)||0)*60+(parseInt($('#ts').value)||0);
+  if(left<=0)return;tshow();$('#tgo').textContent='Pause';
+  cd=setInterval(()=>{left--;tshow();if(left<=0){clearInterval(cd);cd=null;$('#tgo').textContent='Mulai';toast('Waktu habis!');try{navigator.vibrate(400)}catch{}}},1000);
+};
+$('#trs').onclick=()=>{clearInterval(cd);cd=null;left=0;tshow();$('#tgo').textContent='Mulai';};tshow();
+</script>
+</body>
+</html>

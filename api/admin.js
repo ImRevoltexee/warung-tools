@@ -4,9 +4,9 @@
 // GET  /api/admin/users               -> daftar user + key mereka
 // POST /api/admin/user {id, plan|disabled|role} -> ubah user
 // POST /api/admin/key   {prefix, quota_day|status} -> ubah key siapa pun
-const { send, fail, ok, preflight } = require('../_lib');
-const { redis, toObj, getSettings, setSettings, listUsers, countKeys, DEFAULT_SETTINGS } = require('../_store');
-const { getUser } = require('../_auth');
+const { send, fail, ok, preflight } = require('./_lib');
+const { redis, toObj, getSettings, setSettings, listUsers, countKeys, DEFAULT_SETTINGS } = require('./_store');
+const { getUser } = require('./_auth');
 
 function body(req) {
   return new Promise((resolve, reject) => {
@@ -56,6 +56,14 @@ module.exports = async (req, res) => {
       }, 0);
     }
 
+    // ---------- DONASI (admin lihat semua) ----------
+    if (req.method === 'GET' && r === 'donations') {
+      const { listDonations } = require('../_store');
+      const list = await listDonations();
+      const total = list.reduce((a, d) => a + (Number(d.nominal) || 0), 0);
+      return ok(res, { total, jumlah: list.length, semua: list }, 0);
+    }
+
     // ---------- SETTINGS ----------
     if (req.method === 'POST' && r === 'settings') {
       const b = await body(req);
@@ -92,6 +100,8 @@ module.exports = async (req, res) => {
       if (b.disabled === true || b.disabled === '1' || b.disabled === 1) patch.push('disabled', '1');
       if (b.disabled === false || b.disabled === '0' || b.disabled === 0) patch.push('disabled', '0');
       if ((b.role === 'admin' || b.role === 'user') && id !== u.id) patch.push('role', b.role);
+      if (b.verified === true || b.verified === '1' || b.verified === 1) patch.push('verified', '1');
+      if (b.verified === false || b.verified === '0' || b.verified === 0) patch.push('verified', '0');
       if (patch.length) await redis('hset', `user:id:${id}`, ...patch);
 
       // plan pro/free langsung sinkron ke quota key aktif miliknya
@@ -102,7 +112,7 @@ module.exports = async (req, res) => {
         for (const sha of hashes) await redis('hset', `key:${sha}`, 'quota_day', String(quota));
       }
       const upd = toObj(await redis('hgetall', `user:id:${id}`));
-      return send(res, 200, { ok: true, data: { id, email: upd.email, role: upd.role, plan: upd.plan, disabled: upd.disabled === '1' } }, 0);
+      return send(res, 200, { ok: true, data: { id, email: upd.email, username: upd.username, verified: upd.verified === '1', role: upd.role, plan: upd.plan, disabled: upd.disabled === '1' } }, 0);
     }
 
     // ---------- UBAH KEY (milik siapa pun) ----------

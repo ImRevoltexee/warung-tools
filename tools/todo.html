@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Todo List Offline — MR.TOOLS</title>
+<meta name="description" content="Catatan tugas offline, tersimpan di browser. Gratis.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>Todo <span class="hl">List</span></h1><p>Tersimpan di HP lu (localStorage). Tanpa akun.</p></section>
+<section class="panel">
+<div class="row"><label class="lbl" style="flex:3">Tugas baru<input id="in" type="text" placeholder="misal: beli gas..." maxlength="120"></label>
+<div style="flex:1;display:flex;align-items:flex-end"><button class="btn p" id="add">+ Tambah</button></div></div>
+<div id="list" style="margin-top:14px"></div>
+<div class="btns"><button class="btn ghost" id="clr">Hapus yg selesai</button></div>
+</section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+let items=[];try{items=JSON.parse(localStorage.getItem('mr_todo')||'[]')}catch{items=[]}
+function save(){localStorage.setItem('mr_todo',JSON.stringify(items))}
+function render(){
+  $('#list').innerHTML=items.length?items.map((t,i)=>`<div class="res" style="${t.done?'opacity:.55':''}"><h4 style="text-decoration:${t.done?'line-through':''}">${t.text}</h4><div class="btns" style="margin-top:8px"><button class="btn ghost" data-d="${i}" style="font-size:11px;padding:7px 10px">${t.done?'↩️':'✅'}</button><button class="btn ghost" data-x="${i}" style="font-size:11px;padding:7px 10px">🗑️</button></div></div>`).join(''):'<p class="small">Kosong. Tambah tugas pertama lu.</p>';
+  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{items[+b.dataset.d].done=!items[+b.dataset.d].done;save();render()});
+  document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{items.splice(+b.dataset.x,1);save();render()});
+}
+$('#add').onclick=()=>{const v=$('#in').value.trim();if(!v)return;items.unshift({text:v.replace(/</g,'&lt;'),done:false});$('#in').value='';save();render()};
+$('#in').addEventListener('keydown',e=>{if(e.key==='Enter')$('#add').click()});
+$('#clr').onclick=()=>{items=items.filter(t=>!t.done);save();render()};
+render();
+</script>
+</body>
+</html>

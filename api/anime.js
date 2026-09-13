@@ -38,7 +38,7 @@ async function anilist(query, variables, attempt = 0) {
     headers: {
       'content-type': 'application/json',
       accept: 'application/json',
-      'user-agent': 'WarungTools/1.0 (+https://warungtools.vercel.app)',
+      'user-agent': 'MRTools/1.0 (+https://warungtools.vercel.app)',
     },
     body: JSON.stringify({ query, variables }),
     signal: AbortSignal.timeout(8000),

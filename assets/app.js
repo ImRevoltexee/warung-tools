@@ -27,7 +27,10 @@ function setOut(el, text, isErr) {
 
 const rupiah = n => 'Rp' + Math.round(Number(n) || 0).toLocaleString('id-ID');
 
-function rnd(base, spread) { return Math.floor(base + Math.random() * spread); }
+/* centang biru ala sosmed — pakai untuk user verified */
+function badge(v) {
+  return v ? ' <span class="vbadge" title="Terverifikasi">✓</span>' : '';
+}
 
 /* build the shared nav so every page stays in sync */
 function nav(active) {
@@ -36,18 +39,28 @@ function nav(active) {
     ['/tools/wa-link', 'WA Link'],
     ['/tools/qr', 'QR'],
     ['/tools/json', 'JSON'],
-    ['/tools/base64', 'Base64'],
+    ['/tools/uuid', 'UUID'],
+    ['/tools/hash', 'Hash'],
+    ['/tools/wordcount', 'Kata'],
+    ['/tools/case', 'Case'],
+    ['/tools/color', 'Warna'],
     ['/tools/password', 'Password'],
     ['/tools/kompres', 'Kompres'],
     ['/tools/nota', 'Nota'],
     ['/tools/margin', 'Margin'],
     ['/tools/splitbill', 'Split Bill'],
+    ['/tools/umur', 'Umur'],
+    ['/tools/stopwatch', 'Timer'],
+    ['/tools/todo', 'Todo'],
+    ['/tools/lorem', 'Lorem'],
+    ['/tools/yt-thumb', 'YT Thumb'],
+    ['/tools/meta-seo', 'Meta SEO'],
     ['/anime', 'Anime'],
     ['/gempa', 'Gempa'],
     ['/cuaca', 'Cuaca'],
     ['/sholat', 'Sholat'],
+    ['/support', '💛 Support'],
     ['/login', 'Masuk'],
-    ['/dashboard', 'Dashboard'],
   ];
   const h = $('header.top .wrap');
   if (!h) return;
@@ -73,12 +86,17 @@ async function api(path) {
 document.addEventListener('DOMContentLoaded', () => {
   const p = location.pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '') || '/';
   nav(p);
-  // announcement bar (diisi admin dari panel, via /api/settings)
+  // setting publik: pengumuman + nama web + tagline (diatur admin dari panel)
   const ann = document.getElementById('ann');
-  if (ann) {
-    fetch('/api/settings').then(r => r.json()).then(j => {
-      const a = j?.data?.announcement;
-      if (a) { ann.textContent = '📣 ' + a; ann.classList.add('show'); }
-    }).catch(() => {});
-  }
+  fetch('/api/settings').then(r => r.json()).then(j => {
+    const s = j?.data || {};
+    if (s.announcement && ann) { ann.textContent = '📣 ' + s.announcement; ann.classList.add('show'); }
+    if (s.site_name) {
+      document.querySelectorAll('[data-site]').forEach(el => el.textContent = s.site_name);
+      const logo = document.querySelector('.logo');
+      if (logo && !logo.dataset.fixed) logo.textContent = '⚡ ' + s.site_name;
+    }
+    const tg = document.getElementById('tagline');
+    if (tg && s.tagline) tg.textContent = s.tagline;
+  }).catch(() => {});
 });

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Support — MR.TOOLS</title>
+<meta name="description" content="Dukung MR.TOOLS via Saweria / Sociabuzz. 100% tools & API tetap gratis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+  <div class="announce" id="ann"></div>
+  <section class="panel support-hero">
+    <div class="big" id="stitle">Dukung MR.TOOLS ☕</div>
+    <p class="sub" id="stext" style="max-width:60ch;margin:0 auto">Loading...</p>
+    <div class="donate-btns" style="justify-content:center" id="btns"></div>
+  </section>
+  <section class="panel" id="leadsec">
+    <h2>🏆 Leaderboard donatur</h2>
+    <p class="sub" id="ltotal">Loading...</p>
+    <ol class="lead" id="lead"></ol>
+    <p class="small">Donasi via Saweria / Sociabuzz muncul di sini setelah diverifikasi admin (tanpa API key, input manual biar aman). Nama + nominal + pesan aja, tanpa data sensitif.</p>
+  </section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS — 100% gratis, didukung donasi.</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+(async()=>{
+  try{
+    const j=await api('/api/donate');const d=j.data;
+    $('#stitle').textContent=d.title||'Dukung MR.TOOLS ☕';
+    $('#stext').textContent=d.text||'Semua gratis. Kalau terbantu, traktir gue.';
+    let b='';
+    if(d.saweria)b+=`<a class="btn pink" href="${d.saweria}" target="_blank" rel="noopener">💸 Saweria</a>`;
+    if(d.sociabuzz)b+=`<a class="btn blue" href="${d.sociabuzz}" target="_blank" rel="noopener">💛 Sociabuzz</a>`;
+    $('#btns').innerHTML=b||'<p class="small">Link donasi belum dipasang admin.</p>';
+    if(!d.leaderboard_on){$('#leadsec').style.display='none';return;}
+    $('#ltotal').textContent=d.jumlah?`Terkumpul ${rupiah(d.total)} dari ${d.jumlah} donatur. Makasih!`:'Belum ada donasi tercatat. Jadilah yang pertama ☕';
+    $('#lead').innerHTML=(d.top||[]).map((x,i)=>`<li class="${i===0?'top1':i===1?'top2':i===2?'top3':''}"><span class="rank">${i+1}</span><span><b>${String(x.nama||'Hamba Allah').replace(/</g,'&lt;')}</b><br><span class="small">${String(x.pesan||'').replace(/</g,'&lt;')} • ${x.tanggal||''}</span></span><span class="amt">${rupiah(x.nominal||0)}</span></li>`).join('');
+  }catch(e){$('#stext').textContent='Gagal load: '+e.message;}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hitung Kata & Karakter — MR.TOOLS</title>
+<meta name="description" content="Hitung kata, karakter, kalimat, paragraf + estimasi waktu baca. Gratis.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>Hitung <span class="hl">Kata</span></h1><p>Buat skripsi, artikel, caption.</p></section>
+<section class="panel">
+<label class="lbl">Teks<textarea id="in" placeholder="Tempel teks di sini..."></textarea></label>
+<div class="btns"><button class="btn ghost" id="clr">Bersihin</button></div>
+<dl class="kv" id="kv" style="margin-top:14px"><dt>Kata</dt><dd id="w">0</dd><dt>Karakter</dt><dd id="c">0</dd><dt>Tanpa spasi</dt><dd id="ns">0</dd><dt>Kalimat</dt><dd id="s">0</dd><dt>Paragraf</dt><dd id="p">0</dd><dt>Waktu baca</dt><dd id="r">0 dtk</dd></dl>
+</section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+function hit(){
+  const t=$('#in').value||'';
+  const w=(t.trim().match(/\S+/g)||[]).length;
+  const ns=t.replace(/\s/g,'').length;
+  const s=(t.match(/[^.!?]+[.!?]+/g)||[]).length;
+  const p=t.split(/\n\s*\n/).filter(x=>x.trim()).length;
+  $('#w').textContent=w.toLocaleString('id-ID');$('#c').textContent=t.length.toLocaleString('id-ID');
+  $('#ns').textContent=ns.toLocaleString('id-ID');$('#s').textContent=s;$('#p').textContent=p;
+  const m=Math.floor(w/200),d=Math.round(w%200/200*60);
+  $('#r').textContent=m>0?`${m} mnt ${d} dtk`:`${Math.max(1,Math.round(w/200*60))} dtk`;
+}
+$('#in').oninput=hit;$('#clr').onclick=()=>{$('#in').value='';hit()};hit();
+</script>
+</body>
+</html>

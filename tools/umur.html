@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalkulator Umur — MR.TOOLS</title>
+<meta name="description" content="Hitung umur lengkap tahun bulan hari + hari ke ultah berikutnya.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>Kalkulator <span class="hl">Umur</span></h1><p>Tahun, bulan, hari. Plus countdown ultah.</p></section>
+<section class="panel">
+<label class="lbl">Tanggal lahir<input id="d" type="date" value="2000-01-01"></label>
+<div class="btns"><button class="btn p" id="go">Hitung</button></div>
+<dl class="kv" style="margin-top:14px"><dt>Umur</dt><dd id="u">-</dd><dt>Total hari</dt><dd id="h">-</dd><dt>Ultah berikutnya</dt><dd id="b">-</dd></dl>
+</section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+$('#go').onclick=()=>{
+  const bd=new Date($('#d').value+'T00:00:00');if(isNaN(bd))return;
+  const now=new Date();let y=now.getFullYear()-bd.getFullYear(),m=now.getMonth()-bd.getMonth(),d=now.getDate()-bd.getDate();
+  if(d<0){m--;d+=new Date(now.getFullYear(),now.getMonth(),0).getDate();}
+  if(m<0){y--;m+=12;}
+  $('#u').textContent=`${y} thn ${m} bln ${d} hari`;
+  $('#h').textContent=Math.floor((now-bd)/864e5).toLocaleString('id-ID')+' hari';
+  let nx=new Date(now.getFullYear(),bd.getMonth(),bd.getDate());if(nx<now)nx=new Date(now.getFullYear()+1,bd.getMonth(),bd.getDate());
+  $('#b').textContent=nx.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+` (${Math.ceil((nx-now)/864e5)} hari lagi)`;
+};
+$('#go').click();
+</script>
+</body>
+</html>

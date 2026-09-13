@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ubah Case Teks — MR.TOOLS</title>
+<meta name="description" content="UPPERCASE, lowercase, Capitalize, aLtErNaTiF. Gratis di browser.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>Ubah <span class="hl">Case</span></h1><p>Judul tugas jadi rapi sedetik.</p></section>
+<section class="panel">
+<label class="lbl">Teks<textarea id="in" placeholder="tulis DI SINI..."></textarea></label>
+<div class="btns">
+<button class="btn p" data-c="up">UPPERCASE</button>
+<button class="btn blue" data-c="low">lowercase</button>
+<button class="btn green" data-c="cap">Capitalize Each Word</button>
+<button class="btn purple" data-c="sent">Kalimat. Awal Besar.</button>
+<button class="btn orange" data-c="alt">aLtErNaTiF</button>
+<button class="btn ghost" data-c="inv">iNVERSI</button>
+</div>
+<div class="out" id="out"></div>
+<div class="btns"><button class="btn" id="cp">Copy hasil</button></div>
+</section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{
+  const t=$('#in').value||'';const c=b.dataset.c;let r=t;
+  if(c==='up')r=t.toUpperCase();if(c==='low')r=t.toLowerCase();
+  if(c==='cap')r=t.toLowerCase().replace(/(?:^|\s)\S/g,a=>a.toUpperCase());
+  if(c==='sent')r=t.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g,a=>a.toUpperCase());
+  if(c==='alt')r=[...t].map((x,i)=>i%2?x.toUpperCase():x.toLowerCase()).join('');
+  if(c==='inv')r=[...t].map(x=>x===x.toUpperCase()?x.toLowerCase():x.toUpperCase()).join('');
+  $('#out').textContent=r;
+});
+$('#cp').onclick=()=>copy($('#out').textContent);
+</script>
+</body>
+</html>

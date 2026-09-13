@@ -84,7 +84,7 @@ async function getUser(req) {
   if (!p?.sub) return null;
   const u = toObj(await redis('hgetall', `user:id:${p.sub}`));
   if (!u.email || u.disabled === '1') return null;
-  return { id: p.sub, email: u.email, name: u.name || '', role: u.role || 'user', plan: u.plan || 'free' };
+  return { id: p.sub, email: u.email, name: u.name || '', username: u.username || '', verified: u.verified === '1', role: u.role || 'user', plan: u.plan || 'free' };
 }
 
 async function newUserId() {
@@ -92,9 +92,9 @@ async function newUserId() {
 }
 
 function newApiKey() {
-  const raw = 'wt_live_' + crypto.randomBytes(24).toString('hex');
+  const raw = 'mrt_live_' + crypto.randomBytes(24).toString('hex');
   const sha = crypto.createHash('sha256').update(raw).digest('hex');
-  return { raw, sha, prefix: raw.slice(0, 12) + '…' };
+  return { raw, sha, prefix: raw.slice(0, 13) + '…' };
 }
 
 function getIP(req) {

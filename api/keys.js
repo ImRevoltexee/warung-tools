@@ -1,7 +1,7 @@
 // Dashboard user: GET /api/keys (list key sendiri) + POST /api/keys (bikin key baru).
-const { send, fail, ok, preflight } = require('../_lib');
-const { redis, toObj, getSettings } = require('../_store');
-const { getUser, newApiKey } = require('../_auth');
+const { send, fail, ok, preflight } = require('./_lib');
+const { redis, toObj, getSettings } = require('./_store');
+const { getUser, newApiKey } = require('./_auth');
 
 function body(req) {
   return new Promise((resolve, reject) => {

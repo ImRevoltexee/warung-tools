@@ -42,11 +42,18 @@ const DEFAULT_SETTINGS = {
   announcement: '',
   maintenance: '0',
   signup_enabled: '1',
-  free_day: '1000',
+  free_day: '10000',
   pro_day: '50000',
-  anon_min: '30',
-  anon_day: '200',
-  key_min: '60',
+  anon_min: '120',
+  anon_day: '2000',
+  key_min: '120',
+  site_name: 'MR.TOOLS',
+  tagline: 'Tools & API gratis, tanpa login, tanpa paywall.',
+  donate_saweria: '',
+  donate_sociabuzz: '',
+  support_title: 'Dukung MR.TOOLS ☕',
+  support_text: 'Semua tools & API 100% gratis, tanpa login, tanpa quota wajib. Kalau terbantu, traktir gue biar server & domain tetap hidup.',
+  leaderboard_enabled: '1',
 };
 
 async function getSettings() {
@@ -69,13 +76,20 @@ async function listUsers() {
   const out = [];
   for (const id of ids) {
     const u = toObj(await redis('hgetall', `user:id:${id}`));
-    if (u.email) out.push({ id, email: u.email, name: u.name || '', role: u.role || 'user', plan: u.plan || 'free', disabled: u.disabled === '1', created: u.created || '' });
+    if (u.email) out.push({ id, email: u.email, name: u.name || '', username: u.username || '', verified: u.verified === '1', role: u.role || 'user', plan: u.plan || 'free', disabled: u.disabled === '1', created: u.created || '' });
   }
   return out.sort((a, b) => (a.created < b.created ? 1 : -1));
+}
+
+// Donasi manual (admin input dari panel; sumber: Saweria/Sociabuzz, tanpa API key).
+// Schema: don:list = [json...] tiap {nama, nominal, pesan, tanggal}
+async function listDonations() {
+  const arr = (await redis('lrange', 'don:list', '0', '-1')) || [];
+  return arr.map((s) => { try { return JSON.parse(s); } catch { return null; } }).filter(Boolean);
 }
 
 async function countKeys() {
   return Number((await redis('get', 'stats:keys_total')) || 0);
 }
 
-module.exports = { redis, toObj, getSettings, setSettings, listUsers, countKeys, DEFAULT_SETTINGS, needDB };
+module.exports = { redis, toObj, getSettings, setSettings, listUsers, listDonations, countKeys, DEFAULT_SETTINGS, needDB };

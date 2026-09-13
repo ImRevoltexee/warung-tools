@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meta Tag & SEO Checker — MR.TOOLS</title>
+<meta name="description" content="Bikin meta tag SEO + cek panjang judul & deskripsi biar pas di Google.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>Meta <span class="hl">SEO</span></h1><p>Judul + deskripsi yang pas = CTR naik di Google.</p></section>
+<section class="panel">
+<label class="lbl">Judul (ideal 50-60 karakter)<input id="t" type="text" maxlength="120" placeholder="Judul halaman..."></label>
+<p class="small" id="tc">0 karakter</p>
+<label class="lbl">Deskripsi (ideal 150-160 karakter)<textarea id="d" maxlength="320" placeholder="Deskripsi halaman..."></textarea></label>
+<p class="small" id="dc">0 karakter</p>
+<label class="lbl">URL kanonis<input id="u" type="url" placeholder="https://..."></label>
+<div class="btns"><button class="btn p" id="go">Generate meta tag</button><button class="btn" id="cp">Copy</button></div>
+<div class="out" id="out"></div>
+<div class="res" id="prev" style="display:none"><h4>Preview Google</h4><p id="pt" style="color:#1a0dab;font-size:18px;margin:0"></p><p id="pu" style="color:#006621;font-size:13px;margin:0"></p><p id="pd" style="font-size:13px;margin:4px 0 0"></p></div>
+</section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+function upd(){
+  $('#tc').textContent=$('#t').value.length+' karakter '+($('#t').value.length>=50&&$('#t').value.length<=60?'✅ pas':'⚠️ ideal 50-60');
+  $('#dc').textContent=$('#d').value.length+' karakter '+($('#d').value.length>=150&&$('#d').value.length<=160?'✅ pas':'⚠️ ideal 150-160');
+}
+$('#t').oninput=upd;$('#d').oninput=upd;upd();
+$('#go').onclick=()=>{
+  const t=$('#t').value,u=$('#u').value,d=$('#d').value;
+  $('#out').textContent=`<title>${t}</title>\n<meta name="description" content="${d}">\n<link rel="canonical" href="${u}">\n<meta property="og:title" content="${t}">\n<meta property="og:description" content="${d}">\n<meta property="og:url" content="${u}">\n<meta name="twitter:card" content="summary">`;
+  $('#prev').style.display='block';$('#pt').textContent=t;$('#pu').textContent=u;$('#pd').textContent=d;
+};
+$('#cp').onclick=()=>copy($('#out').textContent);
+</script>
+</body>
+</html>

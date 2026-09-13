@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lorem Ipsum Generator Indonesia — MR.TOOLS</title>
+<meta name="description" content="Generate teks dummy Lorem Ipsum / Bahasa Indonesia buat mockup desain.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>Lorem <span class="hl">Ipsum</span></h1><p>Teks dummy buat mockup, tersedia versi latin + Indonesia.</p></section>
+<section class="panel">
+<div class="row">
+<label class="lbl">Jumlah paragraf<input id="n" type="number" value="3" min="1" max="20"></label>
+<label class="lbl">Bahasa<select id="lang"><option value="id">Indonesia</option><option value="la">Latin klasik</option></select></label>
+</div>
+<div class="btns"><button class="btn p" id="go">Generate</button><button class="btn" id="cp">Copy</button></div>
+<div class="out" id="out" style="white-space:pre-wrap"></div>
+</section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const LA=['Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.','Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.','Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.','Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.','Curabitur pretium tincidunt lacus, nec iaculis eros aliquet nec. Vestibulum ante ipsum primis in faucibus orci luctus.'];
+const ID=['Warung kopi di sudut jalan itu selalu ramai setiap pagi. Aroma kopi tubruk bercampur gorengan hangat menyambut siapa pun yang mampir.','Anak-anak berlarian di gang sempit sambil tertawa, mengejar layangan yang tersangkut di kabel listrik.','Ibu penjual sayur menata dagangannya dengan rapi, cabai merah, tomat, dan kangkung segar berjejer menunggu pembeli.','Hujan turun deras sore itu, membasahi jalanan berdebu dan membawa bau tanah yang khas. Orang-orang berteduh di emperan toko.','Di malam hari, lampu-lampu warung berderet terang, menemani para peronda yang berjaga sambil menyeruput teh manis.'];
+$('#go').onclick=()=>{
+  const n=Math.min(Math.max(parseInt($('#n').value)||3,1),20);
+  const src=$('#lang').value==='id'?ID:LA;const out=[];
+  for(let i=0;i<n;i++)out.push(src[i%src.length]);
+  $('#out').textContent=out.join('\n\n');
+};
+$('#cp').onclick=()=>copy($('#out').textContent);$('#go').click();
+</script>
+</body>
+</html>

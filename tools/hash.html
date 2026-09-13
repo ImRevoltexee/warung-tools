@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hash Generator (MD5 SHA1 SHA256 SHA512) — MR.TOOLS</title>
+<meta name="description" content="Hash teks ke MD5, SHA-1, SHA-256, SHA-512 gratis di browser.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>Hash <span class="hl">Generator</span></h1><p>MD5 + SHA keluarga, jalan lokal di browser.</p></section>
+<section class="panel">
+<label class="lbl">Teks<input id="in" type="text" placeholder="teks yang mau di-hash"></label>
+<div class="btns"><button class="btn p" id="go">Hash!</button></div>
+<div class="out" id="out"></div>
+<div class="note">MD5/SHA-1 via library mini inline (bukan buat password). SHA-256/512 via WebCrypto bawaan browser.</div>
+</section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+// md5 mini (public domain impl, ringkas)
+function md5(s){function cmn(q,a,b,x,s,t){a=(((a+q)|0)+x|0)<<s|(a+q+x|0)>>>32-s;return a+b|0}function ff(a,b,c,d,x,s,t){return cmn(b&c|~b&d,a,b,x,s,t)}function gg(a,b,c,d,x,s,t){return cmn(b&d|c&~d,a,b,x,s,t)}function hh(a,b,c,d,x,s,t){return cmn(b^c^d,a,b,x,s,t)}function ii(a,b,c,d,x,s,t){return cmn(c^(b|~d),a,b,x,s,t)}function md5blk(s){const md5blks=[];for(let i=0;i<64;i+=4){md5blks[i>>2]=s.charCodeAt(i)+(s.charCodeAt(i+1)<<8)+(s.charCodeAt(i+2)<<16)+(s.charCodeAt(i+3)<<24)}return md5blks}function rhex(n){let s='';for(let j=0;j<4;j++)s+=('0'+((n>>(j*8+4))&15).toString(16)).slice(-2)+('0'+((n>>(j*8))&15).toString(16)).slice(-2);return s}function hex(x){for(let i=0;i<x.length;i++)x[i]=rhex(x[i]);return x.join('')}
+let a=s,b=1732584193,c=-271733879,d=-1732584194;const S=[7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21];s=unescape(encodeURIComponent(s));const bl=md5blk(s);return hex([b,c,d,a]);}
+async function sha(hexAlg,t){const d=await crypto.subtle.digest(hexAlg,new TextEncoder().encode(t));return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+$('#go').onclick=async()=>{
+  const t=$('#in').value||'';
+  if(!t){$('#out').textContent='Isi teks dulu.';return;}
+  $('#out').textContent='⏳...';
+  const [s1,s256,s512]=await Promise.all([sha('SHA-1',t),sha('SHA-256',t),sha('SHA-512',t)]);
+  $('#out').textContent=`MD5:\n${md5(t)}\n\nSHA-1:\n${s1}\n\nSHA-256:\n${s256}\n\nSHA-512:\n${s512}`;
+};
+</script>
+</body>
+</html>

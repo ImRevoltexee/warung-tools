@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Download Thumbnail YouTube — MR.TOOLS</title>
+<meta name="description" content="Ambil thumbnail YouTube kualitas HD dari link video. Gratis.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">⚡ MR.TOOLS</a></div></header>
+<main class="wrap">
+<section class="hero"><h1>YT <span class="hl">Thumbnail</span></h1><p>Tempel link video, dapat gambar HD-nya.</p></section>
+<section class="panel">
+<label class="lbl">Link YouTube<input id="in" type="url" placeholder="https://youtube.com/watch?v=..."></label>
+<div class="btns"><button class="btn p" id="go">Ambil thumbnail</button></div>
+<div id="res"></div>
+<div class="note">Cuma ambil gambar cover (thumbnail), bukan download video. Video tetap milik kreatornya.</div>
+</section>
+</main>
+<footer><div class="wrap"><span>MR.TOOLS</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+function vid(u){const m=String(u).match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
+$('#go').onclick=()=>{
+  const id=vid($('#in').value);
+  if(!id){$('#res').innerHTML='<div class="out err">Link tidak valid. Contoh: https://youtube.com/watch?v=dQw4w9WgXcQ</div>';return;}
+  const sizes=[['maxresdefault','HD 1280'],['sddefault','SD 640'],['hqdefault','HQ 480'],['mqdefault','MQ 320']];
+  $('#res').innerHTML='<div class="res"><h4>Thumbnail video</h4>'+sizes.map(([f,l])=>`<p><b>${l}</b><br><img src="https://i.ytimg.com/vi/${id}/${f}.jpg" alt="thumbnail ${l}" loading="lazy" style="max-width:100%"><br><a class="btn ghost" style="font-size:12px;padding:8px 12px;margin-top:6px" href="https://i.ytimg.com/vi/${id}/${f}.jpg" target="_blank" rel="noopener">Buka ${l}</a></p>`).join('')+'<p class="small">Klik kanan / long-press gambar → simpan. maxres kadang kosong kalau video lama (pakai SD).</p></div>';
+};
+</script>
+</body>
+</html>

@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
 
     const tok = signToken({ sub: id, role: u.role || 'user', exp: Math.floor(Date.now() / 1000) + 7 * 86400 });
     res.setHeader('Set-Cookie', sessionCookie(tok));
-    return send(res, 200, { ok: true, data: { id, email: u.email, name: u.name || '', role: u.role || 'user', plan: u.plan || 'free' } }, 0);
+    return send(res, 200, { ok: true, data: { id, email: u.email, name: u.name || '', username: u.username || '', verified: u.verified === '1', role: u.role || 'user', plan: u.plan || 'free' } }, 0);
   } catch (e) {
     return fail(res, e.status || 500, e.message);
   }
