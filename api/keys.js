@@ -14,9 +14,14 @@ function body(req) {
 
 module.exports = async (req, res) => {
   if (preflight(req, res)) return;
+  const url = new URL(req.url, 'http://x');
+  // revoke via /api/keys/revoke (rewrite) atau /api/keys?aksi=revoke
+  const isRevoke = url.pathname.endsWith('/revoke') || url.searchParams.get('aksi') === 'revoke';
   let u;
   try { u = await getUser(req); } catch (e) { return fail(res, e.status || 500, e.message); }
   if (!u) return fail(res, 401, 'Login dulu di /login.');
+
+  if (isRevoke) return revoke(req, res, u);
 
   // ---------- LIST ----------
   if (req.method === 'GET') {
@@ -57,5 +62,26 @@ module.exports = async (req, res) => {
     await redis('incr', 'stats:keys_total');
     // key mentah HANYA ditampilkan sekali ini. Habis itu tidak bisa dilihat lagi.
     return send(res, 201, { ok: true, data: { key: raw, prefix, name, quota_day: quota, peringatan: 'Simpan key ini sekarang — tidak akan ditampilkan lagi.' } }, 0);
+  } catch (e) { return fail(res, e.status || 500, e.message); }
+};
+
+// POST /api/keys/revoke { prefix } — nonaktifkan key sendiri.
+async function revoke(req, res, u) {
+  if (req.method !== 'POST') return fail(res, 405, 'Pakai POST.');
+  let b;
+  try { b = await body(req); } catch (e) { return fail(res, 400, e.message); }
+  const prefix = String(b.prefix || '').trim();
+  if (!prefix) return fail(res, 400, 'Isi prefix key yang mau di-revoke.');
+  try {
+    const hashes = (await redis('smembers', `user:${u.id}:keys`)) || [];
+    for (const sha of hashes) {
+      const k = toObj(await redis('hgetall', `key:${sha}`));
+      if (k.prefix === prefix) {
+        await redis('hset', `key:${sha}`, 'status', 'revoked');
+        await redis('srem', `user:${u.id}:keys`, sha);
+        return send(res, 200, { ok: true, data: { revoked: prefix } }, 0);
+      }
+    }
+    return fail(res, 404, 'Key tidak ketemu di akun lu.');
   } catch (e) { return fail(res, e.status || 500, e.message); }
 };

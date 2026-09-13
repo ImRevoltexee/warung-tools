@@ -18,9 +18,12 @@ function body(req) {
 }
 
 function route(url) {
-  const p = new URL(url, 'http://x').pathname;
+  const u = new URL(url, 'http://x');
+  const q = (u.searchParams.get('admin_action') || u.searchParams.get('action') || u.searchParams.get('r') || '').toLowerCase();
+  if (q) return q;
+  const p = u.pathname;
   const i = p.indexOf('/api/admin/');
-  return i >= 0 ? p.slice(i + '/api/admin/'.length) : '';
+  return i >= 0 ? p.slice(i + '/api/admin/'.length).toLowerCase() : '';
 }
 
 module.exports = async (req, res) => {
@@ -58,7 +61,7 @@ module.exports = async (req, res) => {
 
     // ---------- DONASI (admin lihat semua) ----------
     if (req.method === 'GET' && r === 'donations') {
-      const { listDonations } = require('../_store');
+      const { listDonations } = require('./_store');
       const list = await listDonations();
       const total = list.reduce((a, d) => a + (Number(d.nominal) || 0), 0);
       return ok(res, { total, jumlah: list.length, semua: list }, 0);

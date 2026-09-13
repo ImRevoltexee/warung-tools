@@ -3,8 +3,23 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
-    "api/**/*.js": { "memory": 256, "maxDuration": 15 }
+    "api/*.js": { "memory": 256, "maxDuration": 15 }
   },
+  "rewrites": [
+    { "source": "/api/auth/signup", "destination": "/api/auth?action=signup" },
+    { "source": "/api/auth/login", "destination": "/api/auth?action=login" },
+    { "source": "/api/auth/logout", "destination": "/api/auth?action=logout" },
+    { "source": "/api/auth/me", "destination": "/api/auth?action=me" },
+    { "source": "/api/auth/seed", "destination": "/api/auth?action=seed" },
+    { "source": "/api/keys/revoke", "destination": "/api/keys?aksi=revoke" },
+    { "source": "/api/admin", "destination": "/api/admin?admin_action=overview" },
+    { "source": "/api/admin/overview", "destination": "/api/admin?admin_action=overview" },
+    { "source": "/api/admin/users", "destination": "/api/admin?admin_action=users" },
+    { "source": "/api/admin/settings", "destination": "/api/admin?admin_action=settings" },
+    { "source": "/api/admin/user", "destination": "/api/admin?admin_action=user" },
+    { "source": "/api/admin/key", "destination": "/api/admin?admin_action=key" },
+    { "source": "/api/admin/donations", "destination": "/api/admin?admin_action=donations" }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
