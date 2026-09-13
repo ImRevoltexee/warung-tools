@@ -35,18 +35,31 @@ header.top{
   background:var(--yellow);border-bottom:var(--b);
   position:sticky;top:0;z-index:50;
 }
-.top .wrap{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:12px 16px}
+.top .wrap{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:12px 16px;flex-wrap:wrap}
 .logo{
   font-weight:900;font-size:20px;letter-spacing:-.5px;text-transform:uppercase;
   background:var(--paper);border:var(--b);box-shadow:var(--sh-sm);
   padding:6px 12px;border-radius:10px;text-decoration:none;display:inline-block;
-  transform:rotate(-1.2deg);
+  transform:rotate(-1.2deg);flex:0 0 auto;
 }
-.top nav{display:flex;gap:8px;flex-wrap:wrap}
+/* Nav: satu baris, bisa di-swipe horizontal. Scrollbar disembunyikan biar rapi. */
+.top nav{
+  display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+  flex:1 1 320px;min-width:0;
+  padding:5px 4px 7px;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 22px),transparent 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 22px),transparent 100%);
+}
+.top nav::-webkit-scrollbar{display:none;width:0;height:0}
 .top nav a{
-  text-decoration:none;font-weight:800;font-size:13px;text-transform:uppercase;
+  text-decoration:none;font-weight:800;font-size:12px;text-transform:uppercase;
   background:var(--paper);border:3px solid var(--ink);border-radius:999px;
-  padding:5px 12px;box-shadow:var(--sh-sm);
+  padding:5px 11px;box-shadow:var(--sh-sm);white-space:nowrap;flex:0 0 auto;
+  scroll-snap-align:start;
 }
 .top nav a:hover{background:var(--pink)}
 .top nav a.on{background:var(--green)}
