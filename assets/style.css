@@ -169,6 +169,52 @@ footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
 .res img{max-width:100%;border:3px solid var(--ink);border-radius:8px;display:block}
 .small{font-size:12px;opacity:.7}
 
+/* ===== v2: display font, 3D ringan, layout rapi ===== */
+:root{
+  --display:"Archivo Black","Space Grotesk",system-ui,sans-serif;
+  --sh-lg:9px 9px 0 var(--ink);
+}
+.hero h1,.panel h2,.card h3,.sec-head h2,.logo{font-family:var(--display);font-weight:400}
+
+/* announcement bar (diisi /api/settings kalau ada) */
+.announce{display:none;background:var(--purple);border-bottom:var(--b);font-weight:800;font-size:14px;padding:9px 0}
+.announce.show{display:block}
+
+/* hero 2 kolom */
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center}
+@media(max-width:840px){.hero-grid{grid-template-columns:1fr}}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+/* tumpukan kartu 3D melayang */
+.stack{position:relative;min-height:320px;perspective:1100px}
+.mini{position:absolute;background:var(--paper);border:var(--b);border-radius:14px;box-shadow:var(--sh);padding:14px 16px;font-weight:800;width:220px;font-size:14px;animation:float 5s ease-in-out infinite}
+.mini b{display:block;font-family:var(--display);font-weight:400;font-size:15px;margin-bottom:4px;text-transform:uppercase}
+.mini.m1{top:4px;left:6%;transform:rotate(-6deg);background:var(--pink)}
+.mini.m2{top:112px;right:2%;transform:rotate(4deg);background:var(--blue);animation-delay:1.2s}
+.mini.m3{top:212px;left:14%;transform:rotate(-3deg);background:var(--green);animation-delay:2.4s}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -12px}}
+@media(max-width:840px){.stack{min-height:300px}.mini{width:200px}}
+
+/* marquee */
+.marquee{border-top:var(--b);border-bottom:var(--b);background:var(--ink);color:var(--yellow);overflow:hidden;white-space:nowrap;font-weight:900;text-transform:uppercase;font-size:14px;letter-spacing:1px;margin:26px 0 0}
+.marquee span{display:inline-block;padding:9px 0;animation:mq 24s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* section header */
+.sec-head{display:flex;align-items:center;gap:12px;margin:34px 0 0}
+.sec-head h2{font-size:22px;text-transform:uppercase;letter-spacing:-.3px;margin:0}
+.sec-head .n{background:var(--ink);color:var(--yellow);border:3px solid var(--ink);border-radius:10px;padding:2px 10px;font-weight:900;font-size:13px;box-shadow:var(--sh-sm)}
+.sec-head .d{font-size:13px;opacity:.7;font-weight:600}
+
+/* search */
+.searchbar{display:flex;gap:10px;margin:22px 0 4px}
+.searchbar input{font-size:17px}
+.nohit{display:none;margin:18px 0}
+
+/* tilt 3D (dimainkan via JS, murni CSS transform) */
+.tilt{transition:transform .12s ease,box-shadow .12s ease;transform-style:preserve-3d;will-change:transform}
+.tilt.hot{box-shadow:var(--sh-lg)}
+
 /* struk / thermal print */
 .struk{
   background:#fff;color:#000;border:3px dashed var(--ink);padding:14px;

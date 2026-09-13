@@ -22,8 +22,20 @@ const server = http.createServer(async (req, res) => {
 
   // ---- API routes
   if (url.pathname.startsWith('/api/')) {
-    const name = url.pathname.slice('/api/'.length).replace(/[^a-z0-9_-]/gi, '');
-    const file = path.join(ROOT, 'api', `${name}.js`);
+    const name = url.pathname.slice('/api/'.length).replace(/[^a-z0-9_\-/]/gi, '');
+    const parts = name.split('/').filter(Boolean);
+    if (!parts.length || parts.includes('..')) {
+      res.statusCode = 400;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ ok: false, error: 'Endpoint tidak valid' }));
+    }
+    // Block direct access to _helpers, but allow _lib etc. via require only.
+    if (parts.some((p) => p.startsWith('_'))) {
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ ok: false, error: 'Tidak ada' }));
+    }
+    const file = path.join(ROOT, 'api', ...parts) + '.js';
     if (!fs.existsSync(file)) {
       res.statusCode = 404;
       res.setHeader('Content-Type', 'application/json');

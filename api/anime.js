@@ -3,6 +3,7 @@
 // Sumber utama: AniList GraphQL (stabil). Cadangan: Jikan v4 (MyAnimeList).
 // Hanya metadata + cover + link. Bukan host video, bukan streaming bajakan.
 const { ok, fail, preflight, getJSON, cleanStr } = require('./_lib');
+const { guard } = require('./_guard');
 
 const ANILIST = 'https://graphql.anilist.co';
 
@@ -130,6 +131,8 @@ const jikanShape = (a) => ({
 
 module.exports = async (req, res) => {
   if (preflight(req, res)) return;
+  const g = await guard(req, res, 'anime');
+  if (!g) return;
 
   const url = new URL(req.url, 'http://x');
   const q = cleanStr(url.searchParams.get('q'), 80);

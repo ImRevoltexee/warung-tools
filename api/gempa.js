@@ -1,5 +1,6 @@
 // GET /api/gempa  -> gempa terbaru + 15 gempa terakhir (BMKG, data publik resmi)
 const { ok, fail, preflight, getJSON } = require('./_lib');
+const { guard } = require('./_guard');
 
 const AUTO = 'https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json';
 const RECENT = 'https://data.bmkg.go.id/DataMKG/TEWS/gempaterkini.json';
@@ -26,6 +27,8 @@ function shape(g) {
 
 module.exports = async (req, res) => {
   if (preflight(req, res)) return;
+  const g = await guard(req, res, 'gempa');
+  if (!g) return;
   try {
     const [auto, recent] = await Promise.allSettled([getJSON(AUTO), getJSON(RECENT)]);
     const terbaru =

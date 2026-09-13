@@ -2,9 +2,12 @@
 // GET /api/cuaca?kota=Jakarta&hari=5
 // Sumber: wttr.in (OpenStreetMap-based), tanpa API key.
 const { ok, fail, preflight, getJSON, cleanStr } = require('./_lib');
+const { guard } = require('./_guard');
 
 module.exports = async (req, res) => {
   if (preflight(req, res)) return;
+  const g = await guard(req, res, 'cuaca');
+  if (!g) return;
   const url = new URL(req.url, 'http://x');
   const paramKota = url.searchParams.get('kota');
   // Parameter ada tapi kosong = permintaan salah. Parameter tidak ada = pakai Jakarta.

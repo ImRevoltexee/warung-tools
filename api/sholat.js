@@ -3,11 +3,14 @@
 // GET /api/sholat                               -> daftar semua kota
 // Sumber: myQuran API (api.myquran.com), data Kemenag.
 const { ok, fail, preflight, getJSON, todayJakarta, cleanStr, isDate } = require('./_lib');
+const { guard } = require('./_guard');
 
 const BASE = 'https://api.myquran.com/v2/sholat';
 
 module.exports = async (req, res) => {
   if (preflight(req, res)) return;
+  const g = await guard(req, res, 'sholat');
+  if (!g) return;
   const url = new URL(req.url, 'http://x');
   const kota = cleanStr(url.searchParams.get('kota'), 60);
   const tanggal = cleanStr(url.searchParams.get('tanggal'), 10);
