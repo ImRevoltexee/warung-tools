@@ -15,4 +15,7 @@
   <url><loc>https://toolsweb-dun.vercel.app/gempa</loc><priority>0.8</priority></url>
   <url><loc>https://toolsweb-dun.vercel.app/cuaca</loc><priority>0.8</priority></url>
   <url><loc>https://toolsweb-dun.vercel.app/sholat</loc><priority>0.8</priority></url>
+  <url><loc>https://toolsweb-dun.vercel.app/login</loc><priority>0.6</priority></url>
+  <url><loc>https://toolsweb-dun.vercel.app/signup</loc><priority>0.6</priority></url>
+  <url><loc>https://toolsweb-dun.vercel.app/dashboard</loc><priority>0.5</priority></url>
 </urlset>

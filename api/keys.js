@@ -21,13 +21,15 @@ module.exports = async (req, res) => {
   // ---------- LIST ----------
   if (req.method === 'GET') {
     try {
+      const day = new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(0, 10);
       const hashes = (await redis('smembers', `user:${u.id}:keys`)) || [];
       const out = [];
       for (const sha of hashes) {
         const k = toObj(await redis('hgetall', `key:${sha}`));
+        const used = Number(await redis('get', `use:${sha}:${day}`).catch(() => 0)) || 0;
         if (k.prefix) out.push({
           prefix: k.prefix, name: k.name || '', status: k.status || 'active',
-          quota_day: Number(k.quota_day) || 0, used_today: 0, created: k.created || '',
+          quota_day: Number(k.quota_day) || 0, used_today: used, created: k.created || '',
         });
       }
       return ok(res, out, 0);

@@ -101,7 +101,9 @@ header.top{
 
 /* form */
 label{display:block;font-weight:800;font-size:13px;text-transform:uppercase;margin:14px 0 6px;letter-spacing:.3px}
-input[type=text],input[type=number],input[type=url],input[type=date],input[type=time],select,textarea{
+.lbl{display:block;font-weight:800;font-size:13px;text-transform:uppercase;margin:14px 0 6px;letter-spacing:.3px}
+.lbl input{margin-top:6px}
+input[type=text],input[type=number],input[type=url],input[type=date],input[type=time],input[type=email],input[type=password],select,textarea{
   width:100%;padding:12px 14px;font:inherit;font-weight:600;
   background:var(--bg);border:3px solid var(--ink);border-radius:10px;
   box-shadow:var(--sh-sm);outline:none;

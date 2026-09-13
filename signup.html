@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daftar — Warung Tools</title>
+<meta name="description" content="Daftar gratis, dapat API key + quota harian lebih gede dari anonim.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+<main class="wrap" style="max-width:520px">
+  <div class="announce" id="ann"></div>
+  <section class="panel">
+    <h2>Daftar gratis</h2>
+    <p class="sub">Dapat API key sendiri, quota harian gede, kelola dari dashboard. Tanpa kartu kredit.</p>
+    <label class="lbl">Nama<input id="name" type="text" autocomplete="name" placeholder="Nama lu" maxlength="60"></label>
+    <label class="lbl">Email<input id="email" type="email" autocomplete="email" placeholder="lu@contoh.id"></label>
+    <label class="lbl">Password (min 8)<input id="pass" type="password" autocomplete="new-password" placeholder="••••••••"></label>
+    <div class="btns"><button class="btn p" id="go">Bikin akun →</button></div>
+    <div class="out" id="out"></div>
+    <p class="small">Udah punya akun? <a href="/login">Masuk</a></p>
+  </section>
+</main>
+<footer><div class="wrap"><span>Warung Tools.</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+$('#go').onclick=async()=>{
+  const out=$('#out'); out.textContent='⏳ bikin akun...';
+  try{
+    const r=await fetch('/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:$('#name').value,email:$('#email').value,password:$('#pass').value})});
+    const j=await r.json();
+    if(!r.ok||j.ok===false) throw new Error(j.error||('HTTP '+r.status));
+    location.href=j.data.role==='admin'?'/admin':'/dashboard';
+  }catch(e){ out.textContent='❌ '+e.message; }
+};
+</script>
+</body>
+</html>

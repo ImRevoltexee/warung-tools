@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Warung Tools</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/">🛠️ Warung Tools</a></div></header>
+<main class="wrap">
+  <section class="hero"><h1>Admin <span class="hl">panel</span></h1><p id="stats">⏳ loading...</p></section>
+
+  <section class="panel">
+    <h2>📣 Pengaturan</h2>
+    <p class="sub">Semua ngatur dari sini. Tanpa edit source.</p>
+    <label class="lbl">Pengumuman (kosongkan = sembunyi)<input id="s_ann" type="text" maxlength="200"></label>
+    <div class="row">
+      <label class="lbl">Maintenance<input id="s_maint" type="text" placeholder="0 / 1"></label>
+      <label class="lbl">Signup buka<input id="s_signup" type="text" placeholder="0 / 1"></label>
+      <label class="lbl">Free quota/hari<input id="s_free" type="number" min="0"></label>
+      <label class="lbl">Pro quota/hari<input id="s_pro" type="number" min="0"></label>
+    </div>
+    <div class="row">
+      <label class="lbl">Anon/menit/IP<input id="s_amin" type="number" min="1"></label>
+      <label class="lbl">Anon/hari/IP<input id="s_aday" type="number" min="1"></label>
+      <label class="lbl">Key/menit<input id="s_kmin" type="number" min="1"></label>
+    </div>
+    <div class="btns"><button class="btn p" id="save">Simpan</button></div>
+    <div class="out" id="sout"></div>
+  </section>
+
+  <section class="panel">
+    <h2>👥 User + key</h2>
+    <p class="sub">Klik user buat ubah plan / disable / angkat admin. Klik key buat ubah quota / revoke.</p>
+    <div id="users"><p>⏳ loading...</p></div>
+    <div class="out" id="uout"></div>
+  </section>
+</main>
+<footer><div class="wrap"><span>Warung Tools — admin only.</span></div></footer>
+<script src="/assets/app.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+async function J(p,o){const r=await fetch(p,o);const j=await r.json().catch(()=>({}));if(!r.ok||j.ok===false)throw new Error(j.error||('HTTP '+r.status));return j.data;}
+async function load(){
+  const me=await fetch('/api/auth/me').then(r=>r.json()).catch(()=>({}));
+  if(me.ok===false||me.data?.role!=='admin'){location.href='/login';return;}
+  const ov=await J('/api/admin/overview');
+  const st=ov.stats;
+  $('#stats').textContent=`Hari ${st.tanggal}: ${st.request_hari_ini} req • total ${st.request_total} • ${st.total_user} user • ${st.total_key_dibuat} key dibuat`;
+  const s=ov.settings;
+  $('#s_ann').value=s.announcement||'';$('#s_maint').value=s.maintenance;$('#s_signup').value=s.signup_enabled;
+  $('#s_free').value=s.free_day;$('#s_pro').value=s.pro_day;$('#s_amin').value=s.anon_min;$('#s_aday').value=s.anon_day;$('#s_kmin').value=s.key_min;
+  const users=await J('/api/admin/users');
+  $('#users').innerHTML=users.length?users.map(u=>`<div class="res"><h4>${u.email} ${u.disabled?'<span class="chip off">off</span>':''} <span class="chip">${u.plan}</span> <span class="chip">${u.role}</span></h4><p class="small">${u.name||'-'} • ${u.keys.length} key</p><p class="small">${u.keys.map(k=>`${k.prefix} (${k.quota_day}/hari, ${k.status})`).join('<br>')||'tanpa key'}</p><div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="pro" data-id="${u.id}" style="font-size:11px;padding:7px 10px">→pro</button><button class="btn ghost" data-act="free" data-id="${u.id}" style="font-size:11px;padding:7px 10px">→free</button><button class="btn ghost" data-act="dis" data-id="${u.id}" style="font-size:11px;padding:7px 10px">off</button><button class="btn ghost" data-act="on" data-id="${u.id}" style="font-size:11px;padding:7px 10px">on</button></div></div>`).join(''):'<p class="small">Belum ada user.</p>';
+  document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>modUser(b.dataset.id,b.dataset.act));
+}
+async function modUser(id,act){
+  const b={id};
+  if(act==='pro')b.plan='pro';if(act==='free')b.plan='free';
+  if(act==='dis')b.disabled=true;if(act==='on')b.disabled=false;
+  try{$('#uout').textContent=JSON.stringify(await J('/api/admin/user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}));load();}
+  catch(e){$('#uout').textContent='❌ '+e.message;}
+}
+$('#save').onclick=async()=>{
+  const b={announcement:$('#s_ann').value,maintenance:$('#s_maint').value,signup_enabled:$('#s_signup').value,free_day:$('#s_free').value,pro_day:$('#s_pro').value,anon_min:$('#s_amin').value,anon_day:$('#s_aday').value,key_min:$('#s_kmin').value};
+  try{$('#sout').textContent='✅ '+JSON.stringify(await J('/api/admin/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}));}
+  catch(e){$('#sout').textContent='❌ '+e.message;}
+};
+load();
+</script>
+</body>
+</html>

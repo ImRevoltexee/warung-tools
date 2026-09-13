@@ -46,6 +46,8 @@ function nav(active) {
     ['/gempa', 'Gempa'],
     ['/cuaca', 'Cuaca'],
     ['/sholat', 'Sholat'],
+    ['/login', 'Masuk'],
+    ['/dashboard', 'Dashboard'],
   ];
   const h = $('header.top .wrap');
   if (!h) return;
@@ -71,4 +73,12 @@ async function api(path) {
 document.addEventListener('DOMContentLoaded', () => {
   const p = location.pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '') || '/';
   nav(p);
+  // announcement bar (diisi admin dari panel, via /api/settings)
+  const ann = document.getElementById('ann');
+  if (ann) {
+    fetch('/api/settings').then(r => r.json()).then(j => {
+      const a = j?.data?.announcement;
+      if (a) { ann.textContent = '📣 ' + a; ann.classList.add('show'); }
+    }).catch(() => {});
+  }
 });
